@@ -1,5 +1,5 @@
-# just a test:
-list = ["words", "books"]
-guess = input("guess")
-if guess in list:
-    print("good")
+import random
+word_bank = ["dog"]
+random_word = random.choice(word_bank)
+word = list(random_word)
+print(word)

@@ -194,9 +194,9 @@ print(list1)
 for character in list1:
     if character == "u":
         # replace with a *
-        currrent_index = list1.index(character)
-        list1.pop(currrent_index)
-        list1.insert(currrent_index, "*")
+        current_index = list1.index(character)
+        list1.pop(current_index)
+        list1.insert(current_index, "*")
 
 # Changing lists into strings
 print("".join(list1))

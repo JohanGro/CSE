@@ -18,15 +18,17 @@ while correct > 0 and win is False:
         print("congratulations! the word was %s" % answer)
         exit()
     guess = input("insert guess")
+    guess = guess.lower()
     if guess in answer:
         print("you already guessed this")
-    if guess in word and guess not in answer:
-        current_index = word.index(guess)
-        answer.pop(current_index)
-        answer.insert(current_index, guess)
-        answer = "".join(answer)
-        print(answer)
-    if guess not in word:
+    for i in range(2):
+        if guess in word and guess not in answer:
+            current_index = word.index(guess)
+            answer.pop(current_index)
+            answer.insert(current_index, guess)
+            answer = "".join(answer)
+            print(answer)
+    if guess not in word and guess not in answer:
         answer = "".join(answer)
         print("nope")
         correct = correct - 1

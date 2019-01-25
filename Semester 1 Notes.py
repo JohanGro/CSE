@@ -1,4 +1,5 @@
-'''
+import random  # This should always be on line 1
+"""
 print("Hello World!")
 print()
 # This is a comment. I can write whatever I want
@@ -38,14 +39,16 @@ real_age = int(input("How old are you? >_"))
 hidden_age = real_age + 5
 print(hidden_age)
 print("%d is incredibly old. You are actually %d old." % (hidden_age, real_age))
-'''
+"""
 
 # functions
-def printHelloWorld():
+
+
+def hello_world():
     print("Hello World!")
 
 
-printHelloWorld()
+hello_world()
 '''
 This is a multi-line comment
 I can type anywhere here.
@@ -63,11 +66,11 @@ f(5000)
 
 # Loops
 for i in (1, 2, 3):
-    printHelloWorld()
+    hello_world()
 
 print()
 for i in range(10):
-    printHelloWorld()
+    hello_world()
 
 print()
 for i in range(5):  # Range starts at 0 and goes to 4
@@ -90,7 +93,6 @@ While loops - Use when you DON'T know how many iterations
 '''
 
 # Random numbers
-import random  # This should always be on line 1
 print(random.randint(0, 100))
 
 
@@ -155,6 +157,7 @@ print(new_list[:2])
 
 # Adding things to a list
 holiday_list = []  # ALWAYS USE SQUARE BRACKETS
+print(holiday_list)
 holiday_list.append("Tacos")
 holiday_list.append("Bumblebee")
 holiday_list.append("Red Dead Redemption 2")
@@ -200,3 +203,55 @@ for character in list1:
 
 # Changing lists into strings
 print("".join(list1))
+
+
+
+guessed = []
+random_word = random.choice(word_bank)
+word = list(random_word)
+true = list(word)
+answer = "".join(word)
+line = ""
+space = " "
+question_mark = "?"
+for character in word:
+    if character is question_mark:
+        line = line + "?"
+    if character is space:
+        line = line + " "
+    else:
+        line = line + "-"
+        answer = answer.replace(answer, line)
+correct = 7
+while correct > 0:
+    print(answer)
+    answer = list(answer)
+    if true == answer:
+        answer = "".join(answer)
+        print("congratulations! the word was %s" % answer)
+        exit()
+    guessed = "".join(guessed)
+    print("letters you've guessed - %s" % guessed)
+    guessed = list(guessed)
+    guess = input("insert guess")
+    guessed.append(guess)
+    if guess in answer:
+        print("you already guessed this")
+        answer = "".join(answer)
+    while guess in word:
+        answer = list(answer)
+        current_index = word.index(guess)
+        word.pop(current_index)
+        word.insert(current_index, "-")
+        answer.pop(current_index)
+        answer.insert(current_index, guess)
+        answer = "".join(answer)
+        if guess not in word:
+            guess = guess.swapcase()
+    if guess not in word and guess not in answer:
+        answer = "".join(answer)
+        print("nope")
+        correct = correct - 1
+true = "".join(true)
+print("the word was %s" % true)
+print("you could'nt guess it :/")

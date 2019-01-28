@@ -3,11 +3,10 @@ word_bank = ["Treble Clef", "Music Theory", "Cow", "Dog", "Animal", "Computer", 
              "Grappling Hook", "Stringed Instruments", "Drought", "Red", "Drag", "Dripping",
              "Scary", "Ground", "Electricity", "Internet", "Living Room", "Blue", "Cyan", "Tyrannosaurus Rex"
              "Ripping", "Pig", "Chicken", "Frog", "Water", "Wandering", "Training", "Reading Is Good",
-             "How Are You Doing?", "Hows The Weather?", "playing games", "reading books", "squashing the bugs",
-             "cleaning the code", "potato", "tomato", "turkey", "potted plant", "corn", "town", "mayor",
-             "painting", "switch", "cpu", "internet browser", "starry sky", "flag", "train", "cruel", "tree",
-             "earthy", "serious", "answer", "kick", "oceanic", "beautiful", "tiger", "history", "plasma",
-             "gateway", "forty", "llama", "cactus", "camel", "chocolate", "harmony", "world", "coral reef"]
+             "playing games", "reading books", "potato", "tomato", "turkey", "potted plant", "corn", "town", "mayor",
+             "painting", "switch", "cpu", "internet browser", "starry sky", "flag", "train", "cruel", "tree", "earthy",
+             "serious", "answer", "kick", "oceanic", "beautiful", "tiger", "history", "plasma", "gateway", "forty",
+             "llama", "cactus", "camel", "chocolate", "harmony", "world", "coral reef"]
 guessed = []
 random_word = random.choice(word_bank)
 word = list(random_word)
@@ -40,6 +39,8 @@ while correct > 0:
     if guess in answer:
         print("you already guessed this")
         answer = "".join(answer)
+    if guess.swapcase() in word:
+        guess = guess.swapcase()
     while guess in word:
         answer = list(answer)
         current_index = word.index(guess)
@@ -48,9 +49,9 @@ while correct > 0:
         answer.pop(current_index)
         answer.insert(current_index, guess)
         answer = "".join(answer)
-        if guess not in word:
+        if guess.swapcase() in word:
             guess = guess.swapcase()
-    if guess not in word and guess not in answer:
+    if guess not in word and guess not in answer :
         answer = "".join(answer)
         print("nope")
         correct = correct - 1

@@ -40,6 +40,8 @@ while correct > 0:
     if guess in answer:
         print("you already guessed this")
         answer = "".join(answer)
+    if guess.swapcase() in word:
+        guess = guess.swapcase()
     while guess in word:
         answer = list(answer)
         current_index = word.index(guess)
@@ -48,7 +50,7 @@ while correct > 0:
         answer.pop(current_index)
         answer.insert(current_index, guess)
         answer = "".join(answer)
-        if guess not in word:
+        if guess.swapcase() in word:
             guess = guess.swapcase()
     if guess not in word and guess not in answer :
         answer = "".join(answer)

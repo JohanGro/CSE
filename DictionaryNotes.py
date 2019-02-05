@@ -10,7 +10,7 @@ print(states["CA"])
 print(states["NV"])
 '''
 
-'''
+
 nested_dictionary = {
     "CA": {
         "NAME": "California",
@@ -36,7 +36,7 @@ nested_dictionary = {
 
 print(nested_dictionary["NV"]["POPULATION"])
 print(nested_dictionary["RI"]["NAME"])
-'''
+
 
 complex_dictionary = {
     "CA": {
@@ -61,8 +61,8 @@ complex_dictionary = {
         "NAME": "Maryland",
         "POPULATION": 6042718,  # 6,042,718
         "CITIES": [
-            "Bethesda"
-            "Annapolis"
+            "Bethesda",
+            "Annapolis",
             "Baltimore"
         ]
     },
@@ -87,3 +87,25 @@ complex_dictionary = {
 }
 
 print(complex_dictionary["RI"]["CITIES"][2])
+print(complex_dictionary["VA"]["NAME"])
+print(complex_dictionary["MD"]["CITIES"][0])
+print(complex_dictionary.keys())
+print(nested_dictionary.items())
+
+
+print()
+for key, value in complex_dictionary.items():
+    print(key)
+    print(value)
+    print("-" * 20)
+
+# were going to make it look great...
+
+for state, facts in complex_dictionary.items():
+    for attr, value in facts.items():
+        print(attr)
+        print(value)
+        print("-" * 20)
+    print("=" * 20)
+
+states["AL"] = "Alabama"

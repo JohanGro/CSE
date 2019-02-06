@@ -14,6 +14,7 @@ world_map = {
         "PATHS": {
             "SOUTH": "Ominous_Room",
             "NORTH": "Main_Road",
+            "WEST": "Forest"
         }
     },
     "Main_Road": {
@@ -51,9 +52,94 @@ world_map = {
         "PATHS": {
             "WEST": "Shop"
         }
+    },
+    "Foothills": {
+        "NAME": "Foothills",
+        "DESCRIPTION": "The small hills are surrounded around a volcano and mountains."
+                       " The path towards the volcano has been blocked by tons of rocks.",
+        "PATHS": {
+            "WEST": "Hilltop_Mansion",
+            "EAST": "Shop"
+        }
+    },
+    "Hilltop_Mansion": {
+        "NAME": "Hilltop Mansion",
+        "DESCRIPTION": "The door seems to be shut. you hear random noises coming from the inside."
+                       " there two trees on either side of the mansion.",
+        "PATHS": {
+            "SOUTH": "Highlands",
+            "EAST": "Foothills"
+        }
+    },
+    "Highlands": {
+        "NAME": "Highlands",
+        "DESCRIPTION": "You can see almost everything from up here.",
+        "PATHS": {
+            "SOUTH": "Mountains",
+            "NORTH": "Hilltop_Mansion"
+        }
+    },
+    "Mountains": {
+        "NAME": "Mountains",
+        "DESCRIPTION": "There are a lot of wild animals roaming around."
+                       " there is something floating to the west. you seem to barely be able to get onto it.",
+        "PATHS": {
+            "WEST": "Floating_Shop",
+            "SOUTH": "Village",
+            "NORTH": "Highlands"
+        }
+    },
+    "Floating_Shop": {
+        "NAME": "Floating Shop",
+        "DESCRIPTION": "Hello! How did you manage to get up here? No Matters! Browse my selection of items:"
+                       " Glider: 100 coins, Food: 5 coins",
+        "PATHS": {
+            "EAST": "Mountains"
+        }
+    },
+    "Village": {
+        "NAME": "Village",
+        "DESCRIPTION": "The village is painted bright colors. It is full of life, everyone seems happy."
+                       " the well at the center of the village is empty.",
+        "PATHS": {
+            "NORTH": "Mountains",
+            "DOWN": "???",
+            "EAST": "Forest"
+        }
+    },
+    "???": {
+        "NAME": "???",
+        "DESCRIPTION": "You are under the well. You hear faint whispering.",
+        "PATHS": {
+            "NORTH": "Dream_Room",
+            "WEST": "Treasure_Room",
+            "UP": "Village"
+        }
+    },
+    "Dream_Room": {
+        "NAME": "Dream Room",
+        "DESCRIPTION": "This room is said to be used to put nightmares into thieves that would not"
+                       "confess to their crimes. a man sits in the middle of the room asking to set him free.",
+        "PATHS": {
+            "SOUTH": "???"
+        }
+    },
+    "Treasure_Room": {
+        "NAME": "Treasure Room",
+        "DESCRIPTION": "The chest is locked.",
+        "PATHS": {
+            "EAST": "???"
+        }
+    },
+    "Forest": {
+        "NAME": "Forest",
+        "DESCRIPTION": "The forest is filled with thick trees. you may be able to chop them down for wood.",
+        "PATHS": {
+            "WEST": "Village",
+            "EAST": "Forest_Entrance"
+        }
     }
 }
-
 # Other Variables
 current_node = world_map["Ominous_Room"]
 print(current_node['NAME'])

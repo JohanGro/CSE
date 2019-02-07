@@ -180,6 +180,13 @@ current_node = world_map["Ominous_Room"]
 print("~<>~" * 5, current_node['NAME'], "~<>~" * 5)
 print(current_node["DESCRIPTION"])
 directions = ["NORTH", "SOUTH", "EAST", "WEST", "UP", "DOWN"]
+options = ["TAKE"]
+things = {
+    "STICK": {
+        "NAME": "Stick",
+        "DISCRIPTION": "The wooden stick isnt very durable, but gets the job done, Damage: 2"
+    }
+}
 playing = True
 
 # controller
@@ -195,3 +202,14 @@ while playing:
             print(current_node['DESCRIPTION'])
         except KeyError:
             print("I cant go that way")
+    elif command.upper() in options:
+        command = input("Take What?")
+        if command.upper() in things:
+            try:
+                command = command.upper()
+                item = "".join(things[command.upper()]["NAME"])
+                print("You got the %s" % item)
+                print(things[command.upper()]["DISCRIPTION"])
+            except KeyError:
+                print("sorry i dont recognize that item")
+

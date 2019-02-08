@@ -1,10 +1,20 @@
 world_map = {
     "Ominous_Room": {
         "NAME": "Ominous Room",
-        "DESCRIPTION": "Its a room with glowing blue walls. There is a crate that is filled with goods."
+        "DESCRIPTION": "Its a room with glowing blue walls. There is a crate that is filled with food and coins."
                        " A large gate blocks the north exit.",
         "PATHS": {
             "NORTH": "Forest_Entrance"
+        },
+        "ITEMS": {
+            "COINS": {
+                "NAME": "5 Coins",
+                "DESCRIPTION": "Its not much, but its money.",
+            },
+            "FOOD": {
+                "NAME": "Food",
+                "DESCRIPTION": "Its definately edible..."
+            }
         }
     },
     "Forest_Entrance": {
@@ -15,7 +25,13 @@ world_map = {
             "SOUTH": "Ominous_Room",
             "NORTH": "Main_Road",
             "WEST": "Forest"
-        }
+        },
+        "ITEMS": {
+        "STICK": {
+            "NAME": "Stick",
+            "DISCRIPTION": "The wooden stick isnt very durable, but gets the job done, Damage: 2"
+            }
+        },
     },
     "Main_Road": {
         "NAME": "Main Road",
@@ -181,12 +197,6 @@ print("~<>~" * 5, current_node['NAME'], "~<>~" * 5)
 print(current_node["DESCRIPTION"])
 directions = ["NORTH", "SOUTH", "EAST", "WEST", "UP", "DOWN"]
 options = ["TAKE"]
-things = {
-    "STICK": {
-        "NAME": "Stick",
-        "DISCRIPTION": "The wooden stick isnt very durable, but gets the job done, Damage: 2"
-    }
-}
 playing = True
 
 # controller
@@ -204,12 +214,6 @@ while playing:
             print("I cant go that way")
     elif command.upper() in options:
         command = input("Take What?")
-        if command.upper() in things:
-            try:
-                command = command.upper()
-                item = "".join(things[command.upper()]["NAME"])
-                print("You got the %s" % item)
-                print(things[command.upper()]["DISCRIPTION"])
-            except KeyError:
-                print("sorry i dont recognize that item")
-
+        if command.upper() in current_node["ITEMS"]:
+            print(current_node[command.upper()])
+            current_node["ITEMS"].clear()

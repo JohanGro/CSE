@@ -14,6 +14,15 @@ Main_Road = Room("Main Road", "This road used to be highly traveled by. yet nobo
                  Forest_Entrance)
 Town_Square = Room("Town Square", "The center of town. it used to be a place of happiness. seems that is no more.",
                    None, None, Main_Road)
+Shop = Room("Shop", "It's a place to buy a lots of helpful things!", None, None, Town_Square)
+Desert = Room("Desert", "The hot air would be too hot to travel any further.", None, None, None, Shop)
+Foothills = Room("Foothills", "The small hills surround the volcano and the mountains.", None, Shop)
+Hilltop_Mansion = Room("Hilltop Mansion", "The doors are shut.", None, Foothills)
+Highlands = Room("Highlands", "animals roam around here. something floats above your head.")
 Ominous_Room.NORTH = Forest_Entrance
 Forest_Entrance.NORTH = Main_Road
 Main_Road.NORTH = Town_Square
+Shop.EAST = Desert
+Shop.WEST = Foothills
+Foothills.WEST = Hilltop_Mansion
+

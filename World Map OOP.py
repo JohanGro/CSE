@@ -1,5 +1,5 @@
 class Room(object):
-    def __init__(self, name, description="",  north=None, east=None, south=None, west=None, up=None):
+    def __init__(self, name, description="",  north=None, east=None, south=None, west=None, up=None, down=None):
         self.name = name
         self.description = description
         self.NORTH = north
@@ -7,6 +7,7 @@ class Room(object):
         self.SOUTH = south
         self.WEST = west
         self.up = up
+        self.down = down
 
 
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
@@ -24,6 +25,15 @@ Mountains = Room("Mountains", "this is where wild animals thrive. a shadow falls
 Village = Room("Village", "The village is painted many bright colors. It seems they have been in a drought, the well is"
                           " empty.", Mountains)
 Floating_Shop = Room("Floating Shop", "The shop floats high over the world.", None, Mountains)
+Below_The_Well = Room("Below The Well", "There are doors inside here. they are locked. maybe someone can open"
+                                        "it for you.", None, None, None, None, Village)
+Forest = Room("Forest", "The Forest filled with trees and wildlife.", None, Forest_Entrance, None, Village)
+Rain_Forest = Room("Rain Forest", "The forest had large trees. its a perfect place for crocodiles and other animals "
+                                  "alike.", None, None, None, Forest_Entrance)
+Beach = Room("Beach", "The beach allows you to see into the vast ocean.", None, None, None, Rain_Forest)
+Beach_Village = Room("Beach Village", "The people of the village tell you they would be delighted for you to stay.",
+                     None, None, Beach)
+Ocean_Bay = Room("Ocean Bay", "The ocean seems endless. It would be dangerous to swim any further.", Beach)
 Ominous_Room.NORTH = Forest_Entrance
 Forest_Entrance.NORTH = Main_Road
 Main_Road.NORTH = Town_Square
@@ -31,6 +41,10 @@ Shop.EAST = Desert
 Shop.WEST = Foothills
 Foothills.WEST = Hilltop_Mansion
 Highlands.SOUTH = Mountains
-Mountains
-
-
+Mountains.SOUTH = Village
+Mountains.up = Floating_Shop
+Village.down = Below_The_Well
+Village.EAST = Forest
+Rain_Forest.EAST = Beach
+Beach.NORTH = Beach_Village
+Beach.SOUTH = Ocean_Bay

@@ -2,19 +2,34 @@ class Room(object):
     def __init__(self, name, description="",  north=None, east=None, south=None, west=None, up=None, down=None):
         self.name = name
         self.description = description
-        self.NORTH = north
-        self.EAST = east
-        self.SOUTH = south
-        self.WEST = west
+        self.north = north
+        self.east = east
+        self.south = south
+        self.west = west
         self.up = up
         self.down = down
+
+
+class Player(object):
+    def __init__(self, starting_location):
+        self.health = 100
+        self.current_location = starting_location
+        self.damage = 10
+        self.inventory = []
+
+    def move(self, new_location):
+        """This method moves a character to a new location
+
+        :param new_location: The variable containing a room object
+        """
+        self.current_location = new_location
 
 
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
 Forest_Entrance = Room("Forest Entrance", "light glimmers through the treetops.", None, None, Ominous_Room)
 Main_Road = Room("Main Road", "This road used to be highly traveled by. yet nobody can be seen.", None, None,
                  Forest_Entrance)
-Town_Square = Room("Town Square", "The center of town. it used to be a place of happiness. seems that is no more.",
+Town_Square = Room("Town Square", "The center of town. it used to be a place of happiness.",
                    None, None, Main_Road)
 Shop = Room("Shop", "It's a place to buy a lots of helpful things!", None, None, Town_Square)
 Desert = Room("Desert", "The hot air would be too hot to travel any further.", None, None, None, Shop)
@@ -34,17 +49,38 @@ Beach = Room("Beach", "The beach allows you to see into the vast ocean.", None, 
 Beach_Village = Room("Beach Village", "The people of the village tell you they would be delighted for you to stay.",
                      None, None, Beach)
 Ocean_Bay = Room("Ocean Bay", "The ocean seems endless. It would be dangerous to swim any further.", Beach)
-Ominous_Room.NORTH = Forest_Entrance
-Forest_Entrance.NORTH = Main_Road
-Main_Road.NORTH = Town_Square
-Shop.EAST = Desert
-Shop.WEST = Foothills
-Foothills.WEST = Hilltop_Mansion
-Highlands.SOUTH = Mountains
-Mountains.SOUTH = Village
+Ominous_Room.north = Forest_Entrance
+Forest_Entrance.north = Main_Road
+Main_Road.north = Town_Square
+Shop.east = Desert
+Shop.west = Foothills
+Foothills.west = Hilltop_Mansion
+Highlands.south = Mountains
+Mountains.south = Village
 Mountains.up = Floating_Shop
 Village.down = Below_The_Well
-Village.EAST = Forest
-Rain_Forest.EAST = Beach
-Beach.NORTH = Beach_Village
-Beach.SOUTH = Ocean_Bay
+Village.east = Forest
+Rain_Forest.east = Beach
+Beach.north = Beach_Village
+Beach.south = Ocean_Bay
+
+# Player
+Player = Player(Ominous_Room)
+
+playing = True
+directions = ['north', 'south', 'east', 'west', 'up', 'down']
+
+# controller
+while playing:
+    print(Player.current_location.name)
+    print(Player.current_location.description)
+    command = input(">_")
+    if command.lower() in ('q', 'quit', 'exit'):
+        playing = False
+    elif command.lower() in directions:
+        try:
+            # command = 'north
+            room_object = getattr(Player.current_location, command)
+            Player.move(room_object)
+        except KeyError:
+            print("I cant go that way")

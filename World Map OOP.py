@@ -1,5 +1,6 @@
 class Room(object):
-    def __init__(self, name, description="",  north=None, east=None, south=None, west=None, up=None, down=None):
+    def __init__(self, name, description="",  north=None, east=None, south=None, west=None, up=None, down=None,
+                 characters=None):
         self.name = name
         self.description = description
         self.north = north
@@ -8,14 +9,21 @@ class Room(object):
         self.west = west
         self.up = up
         self.down = down
+        self.characters = characters
 
 
 class Player(object):
-    def __init__(self, starting_location):
+    def __init__(self, starting_location, dialogue):
         self.health = 100
         self.current_location = starting_location
         self.damage = 10
         self.inventory = []
+        self.dialogue = dialogue
+
+    def talk(self):
+        who = input("Talk with who?")
+        if who is self:
+            print(self.dialogue)
 
     def move(self, new_location):
         """This method moves a character to a new location
@@ -40,7 +48,7 @@ Mountains = Room("Mountains", "this is where wild animals thrive. a shadow falls
 Village = Room("Village", "The village is painted many bright colors. It seems they have been in a drought, the well is"
                           " empty.", Mountains)
 Floating_Shop = Room("Floating Shop", "The shop floats high over the world.", None, Mountains)
-Below_The_Well = Room("Below The Well", "There are doors inside here. they are locked. maybe someone can open"
+Below_The_Well = Room("Below The Well", "There are doors inside here. they are locked. maybe someone can open "
                                         "it for you.", None, None, None, None, Village)
 Forest = Room("Forest", "The Forest filled with trees and wildlife.", None, Forest_Entrance, None, Village)
 Rain_Forest = Room("Rain Forest", "The forest had large trees. its a perfect place for crocodiles and other animals "
@@ -51,7 +59,10 @@ Beach_Village = Room("Beach Village", "The people of the village tell you they w
 Ocean_Bay = Room("Ocean Bay", "The ocean seems endless. It would be dangerous to swim any further.", Beach)
 Ominous_Room.north = Forest_Entrance
 Forest_Entrance.north = Main_Road
+Forest_Entrance.west = Forest
+Forest.west = Village
 Main_Road.north = Town_Square
+Town_Square.north = Shop
 Shop.east = Desert
 Shop.west = Foothills
 Foothills.west = Hilltop_Mansion
@@ -60,27 +71,31 @@ Mountains.south = Village
 Mountains.up = Floating_Shop
 Village.down = Below_The_Well
 Village.east = Forest
+Floating_Shop.down = Mountains
 Rain_Forest.east = Beach
+Forest_Entrance.east = Rain_Forest
 Beach.north = Beach_Village
 Beach.south = Ocean_Bay
 
-# Player
-Player = Player(Ominous_Room)
-
+Person = Player(Ominous_Room)
 playing = True
 directions = ['north', 'south', 'east', 'west', 'up', 'down']
 
-# controller
 while playing:
-    print(Player.current_location.name)
-    print(Player.current_location.description)
+    print(Person.current_location.name)
+    print(Person.current_location.description)
     command = input(">_")
+    if command.lower()
     if command.lower() in ('q', 'quit', 'exit'):
         playing = False
     elif command.lower() in directions:
         try:
-            # command = 'north
-            room_object = getattr(Player.current_location, command)
-            Player.move(room_object)
-        except KeyError:
-            print("I cant go that way")
+            # command = north
+            room_object = getattr(Person.current_location, command)
+            if room_object is None:
+                raise AttributeError
+            Person.move(room_object)
+        except AttributeError:
+            print("I can not go that way")
+    else:
+        print("I don't understand what your trying to do")

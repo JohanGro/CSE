@@ -47,7 +47,20 @@ class Corvette(Car):
         super(Corvette, self).__init__("Corvette", "Gas", "Slim")
 
 
+class KeylessCar(Car):
+    def __init__(self, name, engine_type, body_type):
+        super(KeylessCar, self).__init__(name, engine_type, body_type)
+
+    def start_engine(self):
+        self.engine_status = True
+        print("you push a button and the car starts.")
+
+
 Car = Corvette()
 Car.start_engine()
-while Car.fuel >= 0:
-    Car.move_forward()
+Car.move_forward()
+print()
+NoKey = KeylessCar("A odd car", "Diesel", "Cube")
+NoKey.start_engine()
+NoKey.move_forward()
+NoKey.turn_off()

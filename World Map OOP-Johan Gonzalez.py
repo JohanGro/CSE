@@ -13,12 +13,11 @@ class Room(object):
 
 
 class Player(object):
-    def __init__(self, starting_location, dialogue):
+    def __init__(self, starting_location):
         self.health = 100
         self.current_location = starting_location
         self.damage = 10
         self.inventory = []
-        self.dialogue = dialogue
 
     def talk(self):
         who = input("Talk with who?")
@@ -85,7 +84,6 @@ while playing:
     print(Person.current_location.name)
     print(Person.current_location.description)
     command = input(">_")
-    if command.lower()
     if command.lower() in ('q', 'quit', 'exit'):
         playing = False
     elif command.lower() in directions:

@@ -51,7 +51,7 @@ while correct > 0:
         answer = "".join(answer)
         if guess.swapcase() in word:
             guess = guess.swapcase()
-    if guess not in word and guess not in answer :
+    if guess not in word and guess not in answer:
         answer = "".join(answer)
         print("nope")
         correct = correct - 1

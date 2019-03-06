@@ -72,7 +72,7 @@ class Food(object):
                 print("You didn't bake anything at all. You just ate the grape.")
             if rand is 10:
                 print("Great work on your first day of cooking! You are not a good cook. so please, save the work and "
-                      "do not cook ever again, please, your torturing the food.")
+                      "do not cook ever again, please, your making everybody get food poisoning.")
 
 
 apple = Food("Apple", "a red fruit that tastes delicious!", "Apples are 25% air, that is why they float!", 95, .5)

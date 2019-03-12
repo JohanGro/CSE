@@ -18,11 +18,7 @@ class Player(object):
         self.current_location = starting_location
         self.damage = 10
         self.inventory = []
-
-    def talk(self):
-        who = input("Talk with who?")
-        if who is self:
-            print(self.dialogue)
+        self.money = 0
 
     def move(self, new_location):
         """This method moves a character to a new location
@@ -77,23 +73,3 @@ Beach.north = Beach_Village
 Beach.south = Ocean_Bay
 
 Person = Player(Ominous_Room)
-playing = True
-directions = ['north', 'south', 'east', 'west', 'up', 'down']
-
-while playing:
-    print(Person.current_location.name)
-    print(Person.current_location.description)
-    command = input(">_")
-    if command.lower() in ('q', 'quit', 'exit'):
-        playing = False
-    elif command.lower() in directions:
-        try:
-            # command = north
-            room_object = getattr(Person.current_location, command)
-            if room_object is None:
-                raise AttributeError
-            Person.move(room_object)
-        except AttributeError:
-            print("I can not go that way")
-    else:
-        print("I don't understand what your trying to do")

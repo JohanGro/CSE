@@ -1,3 +1,7 @@
+import Items
+import random
+
+
 class Room(object):
     def __init__(self, name, description="",  north=None, east=None, south=None, west=None, up=None, down=None,
                  characters=None):
@@ -10,6 +14,29 @@ class Room(object):
         self.up = up
         self.down = down
         self.characters = characters
+
+
+class Character(object):
+    def __init__(self, name, health, weapon, armor):
+        self.name = name
+        self.health = health
+        self.weapon = weapon
+        self.armor = armor
+
+    def take_damage(self, attack):
+        self.health -= attack
+        if self.health < 0:
+            self.health = 0
+        print("%s has %d health left." % (self.name, self.health))
+
+    def attack(self, target):
+        e = random.randint(0, 10)
+        if e is 0:
+            print("%s attacks %s for %d damage, critical hit" % (self.name, target.name, self.weapon.attack * 2))
+            target.take_damage(self.weapon.attack * 2)
+        else:
+            print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
+            target.take_damage(self.weapon.attack)
 
 
 class Player(object):
@@ -72,4 +99,33 @@ Forest_Entrance.east = Rain_Forest
 Beach.north = Beach_Village
 Beach.south = Ocean_Bay
 
+sword = Items.Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
+woodBat = Items.Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
+
 Person = Player(Ominous_Room)
+
+c1 = Character("c1", 100, sword, None)
+c2 = Character("c2", 100, woodBat, None)
+c1.attack(c2)
+c2.attack(c1)
+
+playing = True
+directions = ['north', 'south', 'east', 'west', 'up', 'down']
+while playing:
+    print(Person.current_location.name)
+    print(Person.current_location.description)
+    command = input(">_")
+    if command.lower() in ('q', 'quit', 'exit'):
+        playing = False
+    if command.lower() in ('inv', 'inventory', 'i'):
+        print(Person.inventory)
+
+    elif command.lower() in directions:
+        try:
+            # command = north
+            room_object = getattr(Person.current_location, command)
+            if room_object is None:
+                raise AttributeError
+            Person.move(room_object)
+        except AttributeError:
+            print("I can not go that way")

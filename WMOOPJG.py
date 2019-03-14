@@ -17,11 +17,12 @@ class Room(object):
 
 
 class Character(object):
-    def __init__(self, name, health, weapon, armor):
+    def __init__(self, name, health, weapon, armor, accuracy):
         self.name = name
         self.health = health
         self.weapon = weapon
         self.armor = armor
+        self.accuracy = accuracy
 
     def take_damage(self, attack):
         self.health -= attack
@@ -31,12 +32,46 @@ class Character(object):
 
     def attack(self, target):
         e = random.randint(0, 10)
-        if e is 0:
-            print("%s attacks %s for %d damage, critical hit" % (self.name, target.name, self.weapon.attack * 2))
-            target.take_damage(self.weapon.attack * 2)
-        else:
-            print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
-            target.take_damage(self.weapon.attack)
+        r = random.randint(0, 10)
+        print(r)
+        if self.accuracy is 10:
+            if e is 0:
+                print("%s attacks %s for %d damage, critical hit" % (self.name, target.name, self.weapon.attack * 2))
+                target.take_damage(self.weapon.attack * 2)
+            if e in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
+                target.take_damage(self.weapon.attack)
+        if self.accuracy in (8, 9):
+            if r in (0, 1, 2, 3, 4, 5, 6, 7, 8):
+                if e is 0:
+                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name, self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if e in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            if r in (9, 10):
+                print("they missed the attack.")
+        if self.accuracy in (4, 5, 6, 7):
+            if r in (0, 1, 2, 3, 4, 5):
+                if e is 0:
+                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name, self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if e in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            if r in (6, 7, 8, 9, 10):
+                print("they missed the attack.")
+        if self.accuracy in (0, 1, 2, 3):
+            if r in (1, 2):
+                if e is 0:
+                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name, self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if e in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            else:
+                print("They missed the attack")
+
 
 
 class Player(object):
@@ -101,11 +136,12 @@ Beach.south = Ocean_Bay
 
 sword = Items.Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
 woodBat = Items.Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
-
+class Dirt(Items.Item):
+    def __init__(self):
 Person = Player(Ominous_Room)
 
-c1 = Character("c1", 100, sword, None)
-c2 = Character("c2", 100, woodBat, None)
+c1 = Character("c1", 100, sword, None, 10)
+c2 = Character("c2", 500, woodBat, None, 10)
 c1.attack(c2)
 c2.attack(c1)
 

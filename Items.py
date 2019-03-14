@@ -4,33 +4,6 @@ class Item(object):
         self.description = description
         self.price = price
 
-    def pickup(self):
-        print("you picked up %s" % self.name)
-
-
-class ItemShop(Item):
-    def __init__(self, name, description, selling, location):
-        super(ItemShop, self).__init__(name, description, price=0)
-        self.selling = selling
-        self.location = location
-
-    def buy(self):
-        p = input("buy what?")
-        if p in self.selling:
-            p = input("are you sure you want to buy?")
-            if p.lower() in ("yes", "y"):
-                Item.pickup(self)
-                print("You brought something from the shop. look in your inventory for more information.")
-                print("You do not have enough money.")
-            if p.lower() in ("no", "n"):
-                print("you decided not to buy anything.")
-        else:
-            print("this person does not sell that.")
-
-    def check(self):
-        print(self.description)
-        print(self.selling)
-
 
 class Weapons(Item):
     def __init__(self, name, description, power, price):
@@ -105,7 +78,7 @@ class Fancy(Armor):
         super(Fancy, self).__init__(name, description, protect, price)
 
     def block(self):
-        print("You shouldn't get our suit ruined.")
+        print("You shouldn't get your suit ruined.")
 
 
 class Medicine(Consumables):
@@ -123,7 +96,14 @@ class Bombs(Weapons):
         super(Bombs, self).__init__(name, description, power, price)
 
     def use(self):
-        print("you blew up whatever was in the room.")
+        a = input("use what?")
+        if a.lower() in ("bombs", "bomb"):
+            print("you blew up whatever was in the room.")
+
+
+class Wild(Item):
+    def __init__(self, name, description, price):
+        super(Wild, self).__init__(name, description, price)
 
 
 red_mushroom = Poison("Red Mushroom", "a bright red mushroom found in the wild.", 20, 2)

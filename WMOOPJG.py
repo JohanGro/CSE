@@ -17,7 +17,8 @@ class Room(object):
 
 
 class Character(object):
-    def __init__(self, name, health, weapon, armor, accuracy):
+    def __init__(self, inventory, name, health, weapon, armor, accuracy):
+        self.inventory = inventory
         self.name = name
         self.health = health
         self.weapon = weapon
@@ -29,6 +30,18 @@ class Character(object):
         if self.health < 0:
             self.health = 0
         print("%s has %d health left." % (self.name, self.health))
+
+    def pickup(self, item):
+        self.inventory.append(item.name)
+        print("%s picked up some %s" % (self.name, item.name))
+
+    def throw(self, target, item):
+        if item.name in self.inventory:
+            self.inventory.remove(item.name)
+            print(self.inventory)
+            print("%s threw some dirt" % self.name)
+            print("%s's accuracy was lowered" % target.name)
+            target.accuracy -= 1
 
     def attack(self, target):
         e = random.randint(0, 10)
@@ -73,7 +86,6 @@ class Character(object):
                 print("They missed the attack")
 
 
-
 class Player(object):
     def __init__(self, starting_location):
         self.health = 100
@@ -81,6 +93,10 @@ class Player(object):
         self.damage = 10
         self.inventory = []
         self.money = 0
+
+    def pickup(self, item):
+        self.inventory.append(item.name)
+        print("you picked up a %s" % item.name)
 
     def move(self, new_location):
         """This method moves a character to a new location
@@ -136,14 +152,24 @@ Beach.south = Ocean_Bay
 
 sword = Items.Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
 woodBat = Items.Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
-class Dirt(Items.Item):
-    def __init__(self):
-Person = Player(Ominous_Room)
 
-c1 = Character("c1", 100, sword, None, 10)
-c2 = Character("c2", 500, woodBat, None, 10)
+
+class Dirt(Items.Item):
+    def __init__(self, name, description, price):
+        super(Dirt, self).__init__(name, description, price)
+
+
+Person = Player(Ominous_Room)
+dirt = Dirt("dirt", "just some normal dirt from the ground..", 0)
+c1 = Character([], "c1", 100, sword, None, 10)
+c2 = Character([], "c2", 500, woodBat, None, 10)
 c1.attack(c2)
+c1.pickup(dirt)
+c1.throw(c2, dirt)
+c1.pickup(dirt)
+c1.throw(c2, dirt)
 c2.attack(c1)
+
 
 playing = True
 directions = ['north', 'south', 'east', 'west', 'up', 'down']
@@ -155,7 +181,14 @@ while playing:
         playing = False
     if command.lower() in ('inv', 'inventory', 'i'):
         print(Person.inventory)
-
+    if command.lower() in ("p", 'pickup'):
+        a = input("what would you like to pick up?")
+        items = [dirt.name]
+        if a.lower() in items:
+            i = items.index(a)
+            o = items.
+            print(i)
+            Person.pickup(dirt)
     elif command.lower() in directions:
         try:
             # command = north

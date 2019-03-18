@@ -1,5 +1,5 @@
-import Items
 import random
+# Room
 
 
 class Room(object):
@@ -14,6 +14,143 @@ class Room(object):
         self.up = up
         self.down = down
         self.characters = characters
+
+
+# Items
+class Item(object):
+    def __init__(self, name, description, price):
+        self.name = name
+        self.description = description
+        self.price = price
+
+class Key(Item):
+    def __init__(self, name, description, price):
+        super(Key, self).__init__(name, description, price)
+
+    def use(self):
+        if self.name in Person.inventory:
+            if Person.current_location == Below_The_Well:
+                Sealing_room = Room("The Sealing Room", "A place heavily used to make the troublesome people disappear"
+                                                        "a sword lies in the center of the room.", None, None
+                                    , Below_The_Well)
+                Villagetreasure = Room("The Village Treasury")
+                Below_The_Well.north = Sealing_room
+                Below_The_Well.west =
+class Weapons(Item):
+    def __init__(self, name, description, power, price):
+        super(Weapons, self).__init__(name, description, price)
+        self.attack = power
+
+
+class Armor(Item):
+    def __init__(self, name, description, protect, price):
+        super(Armor, self).__init__(name, description, price)
+        self.protection = protect
+
+    def block(self):
+        if self.protection <= 30:
+            self.protection = self.protection * 2
+            print("Your defense went up")
+        else:
+            print("Your defense has reached the max.")
+
+    @staticmethod
+    def change():
+        input("change to what?")
+
+
+class Consumables(Item):
+    def __init__(self, name, description, health, price):
+        super(Consumables, self).__init__(name, description, price)
+        self.health = health
+
+
+class WoodSword(Weapons):
+    def __init__(self, name, description, power, price):
+        super(WoodSword, self).__init__(name, description, power, price)
+
+
+class Poison(Consumables):
+    def __init__(self, name, description, health, price):
+        super(Poison, self).__init__(name, description, health, price)
+
+
+class Glider(Armor):
+    def __init__(self):
+        super(Glider, self).__init__(name="Glider", description="it can help you glide to places that you couldn't"
+                                                                " normally reach", protect=0, price=0)
+
+
+class IronSword(Weapons):
+    def __init__(self, name, description, power, price):
+        super(IronSword, self).__init__(name, description, power, price)
+
+    @staticmethod
+    def stab():
+        print("the enemy you were fighting was stabbed by your sword.")
+
+
+class EnhancedSword(Weapons):
+    def __init__(self, name, description, power, price):
+        super(EnhancedSword, self).__init__(name, description, power, price)
+
+
+class Axe(Weapons):
+    def __init__(self, name, description, power, price):
+        super(Axe, self).__init__(name, description, power, price)
+
+    @staticmethod
+    def hit():
+        print("you hit the enemy with the bottom of the axe.")
+
+    @staticmethod
+    def cutdown():
+        print("you cut down some trees in the nearby area.")
+
+
+class Fancy(Armor):
+    def __init__(self, name, description, protect, price):
+        super(Fancy, self).__init__(name, description, protect, price)
+
+    def block(self):
+        print("You shouldn't get your suit ruined.")
+
+
+class Food(Consumables):
+    def __init__(self, name, description, health, price):
+        super(Food, self).__init__(name, description, health, price)
+
+
+class Bombs(Weapons):
+    def __init__(self, name, description, power, price):
+        super(Bombs, self).__init__(name, description, power, price)
+
+    @staticmethod
+    def use():
+        a = input("use what?")
+        if a.lower() in ("bombs", "bomb"):
+            print("you blew up whatever was in the room.")
+
+
+class Wild(Item):
+    def __init__(self, name, description, price, location):
+        super(Wild, self).__init__(name, description, price)
+        self.location = location
+
+    def pickup(self):
+        a = input("what would you like to pick up?")
+        if a.lower() in self.name:
+            if Person.current_location == self.location:
+                Person.inventory.append(self.name)
+                print("You picked up a %s" % self.name)
+
+
+
+class Dirt(Item):
+    def __init__(self, name, description, price):
+        super(Dirt, self).__init__(name, description, price)
+
+# Characters
 
 
 class Character(object):
@@ -57,7 +194,8 @@ class Character(object):
         if self.accuracy in (8, 9):
             if r in (0, 1, 2, 3, 4, 5, 6, 7, 8):
                 if e is 0:
-                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name, self.weapon.attack * 2))
+                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name,
+                                                                         self.weapon.attack * 2))
                     target.take_damage(self.weapon.attack * 2)
                 if e in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                     print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
@@ -67,7 +205,8 @@ class Character(object):
         if self.accuracy in (4, 5, 6, 7):
             if r in (0, 1, 2, 3, 4, 5):
                 if e is 0:
-                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name, self.weapon.attack * 2))
+                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name,
+                                                                         self.weapon.attack * 2))
                     target.take_damage(self.weapon.attack * 2)
                 if e in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                     print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
@@ -77,13 +216,27 @@ class Character(object):
         if self.accuracy in (0, 1, 2, 3):
             if r in (1, 2):
                 if e is 0:
-                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name, self.weapon.attack * 2))
+                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name,
+                                                                         self.weapon.attack * 2))
                     target.take_damage(self.weapon.attack * 2)
                 if e in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                     print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
                     target.take_damage(self.weapon.attack)
             else:
                 print("They missed the attack")
+
+
+class Npc(Character):
+    def __init__(self, text, location, inventory, name, health, weapon, armor, accuracy):
+        super(Npc, self).__init__(inventory, name, health, weapon, armor, accuracy)
+        self.text = text
+        self.location = location
+
+    def talk(self):
+        if Person.current_location == self.location:
+            print("%s: %s" % (self.name, self.text))
+
+# Player
 
 
 class Player(object):
@@ -119,7 +272,7 @@ Hilltop_Mansion = Room("Hilltop Mansion", "The doors are shut.", None, Foothills
 Highlands = Room("Highlands", "You can see everything from up here", Hilltop_Mansion)
 Mountains = Room("Mountains", "this is where wild animals thrive. a shadow falls over you.", Highlands)
 Village = Room("Village", "The village is painted many bright colors. It seems they have been in a drought, the well is"
-                          " empty.", Mountains)
+                          " empty. the friendly gate keeper allows you in.", Mountains)
 Floating_Shop = Room("Floating Shop", "The shop floats high over the world.", None, Mountains)
 Below_The_Well = Room("Below The Well", "There are doors inside here. they are locked. maybe someone can open "
                                         "it for you.", None, None, None, None, Village)
@@ -150,25 +303,18 @@ Forest_Entrance.east = Rain_Forest
 Beach.north = Beach_Village
 Beach.south = Ocean_Bay
 
-sword = Items.Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
-woodBat = Items.Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
-
-
-class Dirt(Items.Item):
-    def __init__(self, name, description, price):
-        super(Dirt, self).__init__(name, description, price)
+sword = Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
+Knightarmor = Armor("Knights armor", "Made of Iron, sturdy", 30, 50)
+Broadsword = Weapons("Broadsword", "A double handed sword.", 40, 50)
+woodBat = Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
+WellKey = Item("Well Key", "A rusted key passed down from generations before. it grants access to the Well.",
+               None)
 
 
 Person = Player(Ominous_Room)
-dirt = Dirt("dirt", "just some normal dirt from the ground..", 0)
-c1 = Character([], "c1", 100, sword, None, 10)
-c2 = Character([], "c2", 500, woodBat, None, 10)
-c1.attack(c2)
-c1.pickup(dirt)
-c1.throw(c2, dirt)
-c1.pickup(dirt)
-c1.throw(c2, dirt)
-c2.attack(c1)
+Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
+                 "the people living here, i hope you enjoy your stay.", Village, [WellKey.name], "Gatekeeper", 100,
+                 Broadsword, Knightarmor, 10)
 
 
 playing = True
@@ -181,14 +327,10 @@ while playing:
         playing = False
     if command.lower() in ('inv', 'inventory', 'i'):
         print(Person.inventory)
-    if command.lower() in ("p", 'pickup'):
-        a = input("what would you like to pick up?")
-        items = [dirt.name]
-        if a.lower() in items:
-            i = items.index(a)
-            o = items.
-            print(i)
-            Person.pickup(dirt)
+    if command.lower() in ('talk', 'speak', 't'):
+        a = input("talk to who?")
+        if a.lower() in ('gatekeeper', 'gate keeper'):
+            Gatekeeper.talk()
     elif command.lower() in directions:
         try:
             # command = north

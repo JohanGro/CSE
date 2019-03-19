@@ -4,7 +4,7 @@ import random
 
 class Room(object):
     def __init__(self, name, description="",  north=None, east=None, south=None, west=None, up=None, down=None,
-                 characters=None):
+                 characters=None, items=[]):
         self.name = name
         self.description = description
         self.north = north
@@ -14,6 +14,7 @@ class Room(object):
         self.up = up
         self.down = down
         self.characters = characters
+        self.items = items
 
 
 # Items
@@ -23,6 +24,7 @@ class Item(object):
         self.description = description
         self.price = price
 
+
 class Key(Item):
     def __init__(self, name, description, price):
         super(Key, self).__init__(name, description, price)
@@ -30,12 +32,25 @@ class Key(Item):
     def use(self):
         if self.name in Person.inventory:
             if Person.current_location == Below_The_Well:
-                Sealing_room = Room("The Sealing Room", "A place heavily used to make the troublesome people disappear"
-                                                        "a sword lies in the center of the room.", None, None
-                                    , Below_The_Well)
-                Villagetreasure = Room("The Village Treasury")
-                Below_The_Well.north = Sealing_room
-                Below_The_Well.west =
+                sealing_room = Room("The Sealing Room", "A place heavily used to make the troublesome people disappear"
+                                                        "a sword lies in the center of the room.", None, None,
+                                    Below_The_Well)
+                villagetreasure = Room("The Village Treasury", "a place holding the treasures of the village.")
+                Below_The_Well.north = sealing_room
+                Below_The_Well.west = villagetreasure
+                sealing_room.south = Below_The_Well
+                villagetreasure.east = Below_The_Well
+                print("The doors to the north and west have opened up.")
+                Below_The_Well.description = "Under the well of the village. the passages continue to the north and" \
+                                             " west"
+                Person.inventory.remove(WellKey.name)
+                print("you dropped the key.")
+            else:
+                print("you are not in the right location to use this item")
+        else:
+            print("you do not own this item...")
+
+
 class Weapons(Item):
     def __init__(self, name, description, power, price):
         super(Weapons, self).__init__(name, description, price)
@@ -127,8 +142,8 @@ class Bombs(Weapons):
 
     @staticmethod
     def use():
-        a = input("use what?")
-        if a.lower() in ("bombs", "bomb"):
+        o = input("use what?")
+        if o.lower() in ("bombs", "bomb"):
             print("you blew up whatever was in the room.")
 
 
@@ -138,12 +153,11 @@ class Wild(Item):
         self.location = location
 
     def pickup(self):
-        a = input("what would you like to pick up?")
-        if a.lower() in self.name:
+        c = input("what would you like to pick up?")
+        if c.lower() in self.name:
             if Person.current_location == self.location:
                 Person.inventory.append(self.name)
                 print("You picked up a %s" % self.name)
-
 
 
 class Dirt(Item):
@@ -154,8 +168,8 @@ class Dirt(Item):
 
 
 class Character(object):
-    def __init__(self, inventory, name, health, weapon, armor, accuracy):
-        self.inventory = inventory
+    def __init__(self, name, health, weapon, armor, accuracy):
+        self.inventory = []
         self.name = name
         self.health = health
         self.weapon = weapon
@@ -227,9 +241,10 @@ class Character(object):
 
 
 class Npc(Character):
-    def __init__(self, text, location, inventory, name, health, weapon, armor, accuracy):
-        super(Npc, self).__init__(inventory, name, health, weapon, armor, accuracy)
+    def __init__(self, text, location, name, inventory, health, weapon, armor, accuracy):
+        super(Npc, self).__init__(name, health, weapon, armor, accuracy)
         self.text = text
+        self.inventory = inventory
         self.location = location
 
     def talk(self):
@@ -307,14 +322,18 @@ sword = Weapons("Sword", "a normal sword to use, used highly by knights in the r
 Knightarmor = Armor("Knights armor", "Made of Iron, sturdy", 30, 50)
 Broadsword = Weapons("Broadsword", "A double handed sword.", 40, 50)
 woodBat = Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
-WellKey = Item("Well Key", "A rusted key passed down from generations before. it grants access to the Well.",
-               None)
+WellKey = Key("Well Key", "A rusted key passed down from generations before. it grants access to the Well.", None)
+Tiller = Weapons("A Tiller", "A tool used by farmers to till the soil.", 3, 5)
+seeds = Consumables("some seeds", "Would be better to plant them...", 5, 5)
+Watermelon = Consumables("Watermelon", "A big fruit that came from small seeds", 30, 20)
 
 
 Person = Player(Ominous_Room)
 Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
-                 "the people living here, i hope you enjoy your stay.", Village, [WellKey.name], "Gatekeeper", 100,
+                 "the people living here, i hope you enjoy your stay.", Village, "Gatekeeper", [WellKey.name], 100,
                  Broadsword, Knightarmor, 10)
+Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", Village, 'Farmer',
+                    [seeds.name, Watermelon.name], 100, Tiller, None, 100)
 
 
 playing = True
@@ -331,6 +350,29 @@ while playing:
         a = input("talk to who?")
         if a.lower() in ('gatekeeper', 'gate keeper'):
             Gatekeeper.talk()
+        if a.lower() in ('village farmer', 'villagefarmer'):
+            Villagefarmer.talk()
+            if seeds.name in Villagefarmer.inventory:
+                print("%s: hey, can you plant this, once your done please give it back to me." % Villagefarmer.name)
+                Villagefarmer.inventory.remove(seeds.name)
+                Person.inventory.append(seeds.name)
+                print("the %s gave you some seeds!" % Villagefarmer.name)
+                print("%s: please, it would help my family dearly..." % Villagefarmer.name)
+            if Watermelon.name in Person.inventory:
+                print("%s: is that the watermelon seeds i gave you???" % Villagefarmer.name)
+                print("%s: can you possibly give me it? i'd appreciate it..." % Villagefarmer.name)
+                e = input("will you hand over the watermelon?")
+                if e.lower() in ('no', 'nope'):
+                    print("%s: i see, well, then i'm sorry...")
+                    Villagefarmer.attack(Person)
+                    e = input("what will you do?")
+                    if e in ("attack", "a"):
+
+
+    if command.lower() in ('use', 'u'):
+        s = input('use what?')
+        if s.lower() in ('well key', 'key'):
+            WellKey.use()
     elif command.lower() in directions:
         try:
             # command = north

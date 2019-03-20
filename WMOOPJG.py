@@ -16,6 +16,11 @@ class Room(object):
         self.characters = characters
         self.items = items
 
+    def look(self):
+        print("~-~" * 20)
+        print("%s: %s" % (self.name, self.description))
+        print("Items: %s" % self.items)
+
 
 # Items
 class Item(object):
@@ -152,14 +157,6 @@ class Wild(Item):
         super(Wild, self).__init__(name, description, price)
         self.location = location
 
-    def pickup(self):
-        c = input("what would you like to pick up?")
-        if c.lower() in self.name:
-            if Person.current_location == self.location:
-                Person.inventory.append(self.name)
-                print("You picked up a %s" % self.name)
-
-
 class Dirt(Item):
     def __init__(self, name, description, price):
         super(Dirt, self).__init__(name, description, price)
@@ -262,9 +259,25 @@ class Player(object):
         self.inventory = []
         self.money = 0
 
-    def pickup(self, item):
-        self.inventory.append(item.name)
-        print("you picked up a %s" % item.name)
+    def pickup(self):
+        s = input("pickup what?")
+        if s.lower() in self.current_location.items:
+            e = self.current_location.items.index(s.lower())
+            e = self.current_location.items[e]
+            self.inventory.append(e)
+
+    def eat(self, item):
+        s = input("eat what")
+        if s.lower() in self.inventory:
+            s = self.inventory.index(s.lower())
+            item = self.inventory[s]
+            if self.health >= 100:
+                s = input("you will not gain anything from eating this item, would you still like to eat it?")
+                if s.lower() in ("yes", "y"):
+                    print("you ate %s and did not gain anything." % item.name)
+                else:
+                    print("you did not eat the %s" % item.name)
+                
 
     def move(self, new_location):
         """This method moves a character to a new location
@@ -274,8 +287,21 @@ class Player(object):
         self.current_location = new_location
 
 
+sword = Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
+Knightarmor = Armor("Knights armor", "Made of Iron, sturdy", 30, 50)
+Broadsword = Weapons("Broadsword", "A double handed sword.", 40, 50)
+woodBat = Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
+WellKey = Key("Well Key", "A rusted key passed down from generations before. it grants access to the Well.", None)
+Tiller = Weapons("Tiller", "A tool used by farmers to till the soil.", 3, 5)
+seeds = Consumables("seeds", "Would be better to plant them...", 5, 5)
+Watermelon = Consumables("watermelon", "A big fruit that came from small seeds", 30, 20)
+acorn = Consumables("acorn", "a squirrel would enjoy this.", 5, 3)
+apple = Consumables("apple", "a small red fruit", 10, 8)
+
+
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
-Forest_Entrance = Room("Forest Entrance", "light glimmers through the treetops.", None, None, Ominous_Room)
+Forest_Entrance = Room("Forest Entrance", "a couple of apple trees grow here. acorns scatter the floor",
+                       None, None, Ominous_Room)
 Main_Road = Room("Main Road", "This road used to be highly traveled by. yet nobody can be seen.", None, None,
                  Forest_Entrance)
 Town_Square = Room("Town Square", "The center of town. it used to be a place of happiness.",
@@ -318,15 +344,8 @@ Forest_Entrance.east = Rain_Forest
 Beach.north = Beach_Village
 Beach.south = Ocean_Bay
 
-sword = Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
-Knightarmor = Armor("Knights armor", "Made of Iron, sturdy", 30, 50)
-Broadsword = Weapons("Broadsword", "A double handed sword.", 40, 50)
-woodBat = Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
-WellKey = Key("Well Key", "A rusted key passed down from generations before. it grants access to the Well.", None)
-Tiller = Weapons("A Tiller", "A tool used by farmers to till the soil.", 3, 5)
-seeds = Consumables("some seeds", "Would be better to plant them...", 5, 5)
-Watermelon = Consumables("Watermelon", "A big fruit that came from small seeds", 30, 20)
-
+Forest_Entrance.items = [acorn.name, apple.name]
+Ominous_Room.items = [apple.name]
 
 Person = Player(Ominous_Room)
 Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
@@ -352,27 +371,13 @@ while playing:
             Gatekeeper.talk()
         if a.lower() in ('village farmer', 'villagefarmer'):
             Villagefarmer.talk()
-            if seeds.name in Villagefarmer.inventory:
-                print("%s: hey, can you plant this, once your done please give it back to me." % Villagefarmer.name)
-                Villagefarmer.inventory.remove(seeds.name)
-                Person.inventory.append(seeds.name)
-                print("the %s gave you some seeds!" % Villagefarmer.name)
-                print("%s: please, it would help my family dearly..." % Villagefarmer.name)
-            if Watermelon.name in Person.inventory:
-                print("%s: is that the watermelon seeds i gave you???" % Villagefarmer.name)
-                print("%s: can you possibly give me it? i'd appreciate it..." % Villagefarmer.name)
-                e = input("will you hand over the watermelon?")
-                if e.lower() in ('no', 'nope'):
-                    print("%s: i see, well, then i'm sorry...")
-                    Villagefarmer.attack(Person)
-                    e = input("what will you do?")
-                    if e in ("attack", "a"):
-
-
     if command.lower() in ('use', 'u'):
         s = input('use what?')
         if s.lower() in ('well key', 'key'):
             WellKey.use()
+
+    if command.lower() in ('p', 'pickup'):
+        Person.pickup()
     elif command.lower() in directions:
         try:
             # command = north

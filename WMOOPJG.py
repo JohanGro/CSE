@@ -4,7 +4,7 @@ import random
 
 class Room(object):
     def __init__(self, name, description="",  north=None, east=None, south=None, west=None, up=None, down=None,
-                 characters=None, items=[]):
+                 characters=None):
         self.name = name
         self.description = description
         self.north = north
@@ -14,7 +14,7 @@ class Room(object):
         self.up = up
         self.down = down
         self.characters = characters
-        self.items = items
+        self.items = []
 
     def look(self):
         print("~-~" * 20)
@@ -265,18 +265,25 @@ class Player(object):
             e = self.current_location.items.index(s.lower())
             e = self.current_location.items[e]
             self.inventory.append(e)
+            print("you picked up a %s" % e)
 
-    def eat(self, item):
-        s = input("eat what")
-        if s.lower() in self.inventory:
-            s = self.inventory.index(s.lower())
-            item = self.inventory[s]
+    def eat(self, thing):
+        if self.health >= 100:
+            s = input("you will not gain anything from eating this item, would you still like to eat it?")
+            if s.lower() in ("yes", "y"):
+                print("you ate %s and did not gain anything." % thing.name)
+            else:
+                print("you did not eat the %s" % thing.name)
+        else:
+            print(self.health)
+            self.health += thing.health
             if self.health >= 100:
-                s = input("you will not gain anything from eating this item, would you still like to eat it?")
-                if s.lower() in ("yes", "y"):
-                    print("you ate %s and did not gain anything." % item.name)
-                else:
-                    print("you did not eat the %s" % item.name)
+                a = self.health - 100
+                a -= thing.health
+                s = a - a - a
+                self.health = 100
+            print("you ate the %s and gained %s health!" % (thing.name, s))
+            print("your health is at %s" % self.health)
                 
 
     def move(self, new_location):
@@ -353,7 +360,9 @@ Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not c
                  Broadsword, Knightarmor, 10)
 Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", Village, 'Farmer',
                     [seeds.name, Watermelon.name], 100, Tiller, None, 100)
-
+Person.inventory.append(seeds.name)
+Person.health -= 4
+Person.pickup()
 
 playing = True
 directions = ['north', 'south', 'east', 'west', 'up', 'down']
@@ -367,10 +376,15 @@ while playing:
         print(Person.inventory)
     if command.lower() in ('talk', 'speak', 't'):
         a = input("talk to who?")
-        if a.lower() in ('gatekeeper', 'gate keeper'):
-            Gatekeeper.talk()
-        if a.lower() in ('village farmer', 'villagefarmer'):
-            Villagefarmer.talk()
+
+    if command.lower() in ('eat', 'e'):
+        e = input("eat what")
+        if e.lower() in Person.inventory:
+            r = Person.inventory.index(e)
+            e = Person.inventory[r]
+            Person.eat(seeds)
+        else:
+            print("you do not own that item, or that item is not to be eaten")
     if command.lower() in ('use', 'u'):
         s = input('use what?')
         if s.lower() in ('well key', 'key'):

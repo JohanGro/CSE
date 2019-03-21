@@ -1,10 +1,11 @@
 import random
+
+
 # Room
 
 
 class Room(object):
-    def __init__(self, name, description="",  north=None, east=None, south=None, west=None, up=None, down=None,
-                 characters=None, items=[]):
+    def __init__(self, name, description="", north=None, east=None, south=None, west=None, up=None, down=None):
         self.name = name
         self.description = description
         self.north = north
@@ -13,8 +14,8 @@ class Room(object):
         self.west = west
         self.up = up
         self.down = down
-        self.characters = characters
-        self.items = items
+        self.characters = []
+        self.items = []
 
     def look(self):
         print("~-~" * 20)
@@ -157,9 +158,11 @@ class Wild(Item):
         super(Wild, self).__init__(name, description, price)
         self.location = location
 
+
 class Dirt(Item):
     def __init__(self, name, description, price):
         super(Dirt, self).__init__(name, description, price)
+
 
 # Characters
 
@@ -192,45 +195,45 @@ class Character(object):
             target.accuracy -= 1
 
     def attack(self, target):
-        e = random.randint(0, 10)
-        r = random.randint(0, 10)
-        print(r)
+        rand1 = random.randint(0, 10)
+        rand2 = random.randint(0, 10)
+        print(rand2)
         if self.accuracy is 10:
-            if e is 0:
+            if rand1 is 0:
                 print("%s attacks %s for %d damage, critical hit" % (self.name, target.name, self.weapon.attack * 2))
                 target.take_damage(self.weapon.attack * 2)
-            if e in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+            if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                 print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
                 target.take_damage(self.weapon.attack)
         if self.accuracy in (8, 9):
-            if r in (0, 1, 2, 3, 4, 5, 6, 7, 8):
-                if e is 0:
+            if rand2 in (0, 1, 2, 3, 4, 5, 6, 7, 8):
+                if rand1 is 0:
                     print("%s attacks %s for %d damage, critical hit" % (self.name, target.name,
                                                                          self.weapon.attack * 2))
                     target.take_damage(self.weapon.attack * 2)
-                if e in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                     print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
                     target.take_damage(self.weapon.attack)
-            if r in (9, 10):
+            if rand2 in (9, 10):
                 print("they missed the attack.")
         if self.accuracy in (4, 5, 6, 7):
-            if r in (0, 1, 2, 3, 4, 5):
-                if e is 0:
+            if rand2 in (0, 1, 2, 3, 4, 5):
+                if rand1 is 0:
                     print("%s attacks %s for %d damage, critical hit" % (self.name, target.name,
                                                                          self.weapon.attack * 2))
                     target.take_damage(self.weapon.attack * 2)
-                if e in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                     print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
                     target.take_damage(self.weapon.attack)
-            if r in (6, 7, 8, 9, 10):
+            if rand2 in (6, 7, 8, 9, 10):
                 print("they missed the attack.")
         if self.accuracy in (0, 1, 2, 3):
-            if r in (1, 2):
-                if e is 0:
+            if rand2 in (1, 2):
+                if rand1 is 0:
                     print("%s attacks %s for %d damage, critical hit" % (self.name, target.name,
                                                                          self.weapon.attack * 2))
                     target.take_damage(self.weapon.attack * 2)
-                if e in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                     print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
                     target.take_damage(self.weapon.attack)
             else:
@@ -238,15 +241,11 @@ class Character(object):
 
 
 class Npc(Character):
-    def __init__(self, text, location, name, inventory, health, weapon, armor, accuracy):
+    def __init__(self, text, name, inventory, health, weapon, armor, accuracy):
         super(Npc, self).__init__(name, health, weapon, armor, accuracy)
         self.text = text
         self.inventory = inventory
-        self.location = location
 
-    def talk(self):
-        if Person.current_location == self.location:
-            print("%s: %s" % (self.name, self.text))
 
 # Player
 
@@ -259,29 +258,53 @@ class Player(object):
         self.inventory = []
         self.money = 0
 
-    def pickup(self):
-        s = input("pickup what?")
-        if s.lower() in self.current_location.items:
-            e = self.current_location.items.index(s.lower())
-            e = self.current_location.items[e]
-            self.inventory.append(e)
+    def talk(self):
+        person = input("talk to who?")
+        area = Rooms.index(self.current_location)
+        area = Rooms[area]
+        print(area.characters)
+        if person.lower() in area.characters:
+            person = area.characters.index(person)
+            target = area.characters[person]
+            print(target.text)
 
-    def eat(self, item):
-        s = input("eat what")
-        if s.lower() in self.inventory:
-            s = self.inventory.index(s.lower())
-            item = self.inventory[s]
+    def pickup(self, location):
+        resp = input("pickup what?")
+        if resp.lower() in location.items:
+            if self.current_location in Rooms:
+                room = Rooms.index(self.current_location)
+                room = Rooms[room]
+                locate = location.items.index(resp)
+                item = location.items[locate]
+                self.inventory.append(item)
+                print("you picked up a %s" % item)
+                room.items.remove(item)
+        else:
+            print("That is not in this room, or you already have this item")
+
+    def eat(self, thing):
+        if self.health >= 100:
+            response = input("you will not gain anything from eating this item, would you still like to eat it?")
+            if response.lower() in ("yes", "y"):
+                print("you ate %s and did not gain anything." % thing.name)
+            else:
+                print("you did not eat the %s" % thing.name)
+        else:
+            print(self.health)
+            self.health += thing.health
             if self.health >= 100:
-                s = input("you will not gain anything from eating this item, would you still like to eat it?")
-                if s.lower() in ("yes", "y"):
-                    print("you ate %s and did not gain anything." % item.name)
-                else:
-                    print("you did not eat the %s" % item.name)
-                
+                nf = self.health - 100  # Nf for Not Finished calculations
+                nf -= thing.health
+                final = nf - nf - nf
+                self.health = 100
+                print("you ate the %s and gained %s health!" % (thing.name, final))
+                print("your health is at %s" % self.health)
+            else:
+                print("you ate the %s and gained %s health" % thing.name, thing.health)
+                print("your health is at %s" % self.health)
 
     def move(self, new_location):
         """This method moves a character to a new location
-
         :param new_location: The variable containing a room object
         """
         self.current_location = new_location
@@ -297,7 +320,6 @@ seeds = Consumables("seeds", "Would be better to plant them...", 5, 5)
 Watermelon = Consumables("watermelon", "A big fruit that came from small seeds", 30, 20)
 acorn = Consumables("acorn", "a squirrel would enjoy this.", 5, 3)
 apple = Consumables("apple", "a small red fruit", 10, 8)
-
 
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
 Forest_Entrance = Room("Forest Entrance", "a couple of apple trees grow here. acorns scatter the floor",
@@ -344,15 +366,20 @@ Forest_Entrance.east = Rain_Forest
 Beach.north = Beach_Village
 Beach.south = Ocean_Bay
 
+Rooms = [Ominous_Room, Forest_Entrance, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
+         Floating_Shop, Rain_Forest, Forest_Entrance, Beach, Beach_Village, Below_The_Well]
+
 Forest_Entrance.items = [acorn.name, apple.name]
 Ominous_Room.items = [apple.name]
 
 Person = Player(Ominous_Room)
 Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
-                 "the people living here, i hope you enjoy your stay.", Village, "Gatekeeper", [WellKey.name], 100,
+                 "the people living here, i hope you enjoy your stay.", "gatekeeper", [WellKey.name], 100,
                  Broadsword, Knightarmor, 10)
-Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", Village, 'Farmer',
+Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", 'farmer',
                     [seeds.name, Watermelon.name], 100, Tiller, None, 100)
+Village.characters = [Gatekeeper, Villagefarmer]
+Person.inventory.append(seeds.name)
 
 
 playing = True
@@ -367,17 +394,24 @@ while playing:
         print(Person.inventory)
     if command.lower() in ('talk', 'speak', 't'):
         a = input("talk to who?")
-        if a.lower() in ('gatekeeper', 'gate keeper'):
-            Gatekeeper.talk()
-        if a.lower() in ('village farmer', 'villagefarmer'):
-            Villagefarmer.talk()
+
+    if command.lower() in ('eat', 'e'):
+        e = input("eat what")
+        if e.lower() in Person.inventory:
+            r = Person.inventory.index(e)
+            e = Person.inventory[r]
+            Person.eat(seeds)
+        else:
+            print("you do not own that item, or that item is not to be eaten")
     if command.lower() in ('use', 'u'):
         s = input('use what?')
         if s.lower() in ('well key', 'key'):
             WellKey.use()
 
     if command.lower() in ('p', 'pickup'):
-        Person.pickup()
+        print(Person.current_location.items)
+        Person.pickup(Person.current_location)
+
     elif command.lower() in directions:
         try:
             # command = north

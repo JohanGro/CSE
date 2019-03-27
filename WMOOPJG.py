@@ -15,6 +15,7 @@ class Room(object):
         self.up = up
         self.down = down
         self.characters = []
+        self.characters = []
         self.items = []
 
     def look(self):
@@ -126,7 +127,9 @@ class Axe(Weapons):
 
     @staticmethod
     def cutdown():
-        print("you cut down some trees in the nearby area.")
+        if Person.current_location == Forest:
+            print("you cut down some trees in the nearby area.")
+            Forest.items.append(wood)
 
 
 class Fancy(Armor):
@@ -268,29 +271,27 @@ class Player(object):
             target = area.characters[person]
             print(target.text)
 
-    def pickup(self, location):
+    def pickup(self):
         resp = input("pickup what?")
-        if resp.lower() in location.items:
-            if self.current_location in Rooms:
-                room = Rooms.index(self.current_location)
-                room = Rooms[room]
-                locate = location.items.index(resp)
-                item = location.items[locate]
-                self.inventory.append(item)
-                print("you picked up a %s" % item)
-                room.items.remove(item)
-        else:
-            print("That is not in this room, or you already have this item")
+        k = 0
+        for i in self.current_location.items:
+            if resp.lower() == self.current_location.items[k].name:
+                if self.current_location in Rooms:
+                    self.inventory.append(self.current_location.items[k])
+                    print("you picked up a %s" % self.current_location.items[k].name)
+                    self.current_location.items.remove(self.current_location.items[k])
+            k += 1
 
     def eat(self, thing):
         if self.health >= 100:
-            response = input("you will not gain anything from eating this item, would you still like to eat it?")
-            if response.lower() in ("yes", "y"):
+            q = input("you will not gain anything from eating this item, would you still like to eat it?")
+            if q.lower() in ("yes", "y"):
                 print("you ate %s and did not gain anything." % thing.name)
+                self.inventory.remove(thing)
             else:
                 print("you did not eat the %s" % thing.name)
         else:
-            print(self.health)
+            print("current health: %s " % self.health)
             self.health += thing.health
             if self.health >= 100:
                 nf = self.health - 100  # Nf for Not Finished calculations
@@ -299,9 +300,11 @@ class Player(object):
                 self.health = 100
                 print("you ate the %s and gained %s health!" % (thing.name, final))
                 print("your health is at %s" % self.health)
+                self.inventory.remove(thing)
             else:
-                print("you ate the %s and gained %s health" % thing.name, thing.health)
+                print("you ate the %s and gained %s health!" % (thing.name, thing.health))
                 print("your health is at %s" % self.health)
+                self.inventory.remove(thing)
 
     def move(self, new_location):
         """This method moves a character to a new location
@@ -320,6 +323,8 @@ seeds = Consumables("seeds", "Would be better to plant them...", 5, 5)
 Watermelon = Consumables("watermelon", "A big fruit that came from small seeds", 30, 20)
 acorn = Consumables("acorn", "a squirrel would enjoy this.", 5, 3)
 apple = Consumables("apple", "a small red fruit", 10, 8)
+axe = Axe("axe", "a huge axe, can be used to chop down trees in certain areas.", 5, None)
+wood = Item("wood", "some wood that can be used to light a fire.", 5)
 
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
 Forest_Entrance = Room("Forest Entrance", "a couple of apple trees grow here. acorns scatter the floor",
@@ -369,19 +374,18 @@ Beach.south = Ocean_Bay
 Rooms = [Ominous_Room, Forest_Entrance, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
          Floating_Shop, Rain_Forest, Forest_Entrance, Beach, Beach_Village, Below_The_Well]
 
-Forest_Entrance.items = [acorn.name, apple.name]
-Ominous_Room.items = [apple.name]
-
+Forest_Entrance.items = [acorn, apple]
+Ominous_Room.items = [apple]
+Forest.items = [axe, wood, wood]
 Person = Player(Ominous_Room)
 Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
                  "the people living here, i hope you enjoy your stay.", "gatekeeper", [WellKey.name], 100,
                  Broadsword, Knightarmor, 10)
 Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", 'farmer',
                     [seeds.name, Watermelon.name], 100, Tiller, None, 100)
+
 Village.characters = [Gatekeeper, Villagefarmer]
-Person.inventory.append(seeds.name)
-
-
+currenti = []
 playing = True
 directions = ['north', 'south', 'east', 'west', 'up', 'down']
 while playing:
@@ -391,26 +395,34 @@ while playing:
     if command.lower() in ('q', 'quit', 'exit'):
         playing = False
     if command.lower() in ('inv', 'inventory', 'i'):
-        print(Person.inventory)
+        print("items:")
+        add = 0
+        for item in Person.inventory:
+            print(Person.inventory[add].name)
+            add += 1
     if command.lower() in ('talk', 'speak', 't'):
         a = input("talk to who?")
 
     if command.lower() in ('eat', 'e'):
         e = input("eat what")
-        if e.lower() in Person.inventory:
-            r = Person.inventory.index(e)
-            e = Person.inventory[r]
-            Person.eat(seeds)
-        else:
-            print("you do not own that item, or that item is not to be eaten")
+        for i in Person.inventory:
+            num = 0
+            if e.lower() == Person.inventory[num].name:
+                Person.eat(Person.inventory[num])
+            else:
+                num += 1
     if command.lower() in ('use', 'u'):
         s = input('use what?')
         if s.lower() in ('well key', 'key'):
             WellKey.use()
 
     if command.lower() in ('p', 'pickup'):
-        print(Person.current_location.items)
-        Person.pickup(Person.current_location)
+        print("items in the area:")
+        l = 0
+        for i in Person.current_location.items:
+            print(Person.current_location.items[l].name)
+            l += 1
+        Person.pickup()
 
     elif command.lower() in directions:
         try:

@@ -15,7 +15,6 @@ class Room(object):
         self.up = up
         self.down = down
         self.characters = []
-        self.characters = []
         self.items = []
 
     def look(self):
@@ -36,6 +35,11 @@ class Key(Item):
     def __init__(self, name, description, price):
         super(Key, self).__init__(name, description, price)
 
+
+class WellKey(Key):
+    def __init__(self, name, description, price):
+        super(WellKey, self).__init__(name, description, price)
+
     def use(self):
         if self.name in Person.inventory:
             if Person.current_location == Below_The_Well:
@@ -50,7 +54,7 @@ class Key(Item):
                 print("The doors to the north and west have opened up.")
                 Below_The_Well.description = "Under the well of the village. the passages continue to the north and" \
                                              " west"
-                Person.inventory.remove(WellKey.name)
+                Person.inventory.remove(WellKey)
                 print("you dropped the key.")
             else:
                 print("you are not in the right location to use this item")
@@ -186,7 +190,7 @@ class Character(object):
         print("%s has %d health left." % (self.name, self.health))
 
     def pickup(self, item):
-        self.inventory.append(item.name)
+        self.inventory.append(item)
         print("%s picked up some %s" % (self.name, item.name))
 
     def throw(self, target, item):
@@ -261,15 +265,9 @@ class Player(object):
         self.inventory = []
         self.money = 0
 
-    def talk(self):
-        person = input("talk to who?")
-        area = Rooms.index(self.current_location)
-        area = Rooms[area]
-        print(area.characters)
-        if person.lower() in area.characters:
-            person = area.characters.index(person)
-            target = area.characters[person]
-            print(target.text)
+    @staticmethod
+    def talk(target):
+        print("%s: %s" % (target.name, target.text))
 
     def pickup(self):
         resp = input("pickup what?")
@@ -317,7 +315,7 @@ sword = Weapons("Sword", "a normal sword to use, used highly by knights in the r
 Knightarmor = Armor("Knights armor", "Made of Iron, sturdy", 30, 50)
 Broadsword = Weapons("Broadsword", "A double handed sword.", 40, 50)
 woodBat = Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
-WellKey = Key("Well Key", "A rusted key passed down from generations before. it grants access to the Well.", None)
+KeyforWell = WellKey("Well Key", "A rusted key passed down from generations before. it grants access to the Well.", None)
 Tiller = Weapons("Tiller", "A tool used by farmers to till the soil.", 3, 5)
 seeds = Consumables("seeds", "Would be better to plant them...", 5, 5)
 Watermelon = Consumables("watermelon", "A big fruit that came from small seeds", 30, 20)
@@ -371,19 +369,22 @@ Forest_Entrance.east = Rain_Forest
 Beach.north = Beach_Village
 Beach.south = Ocean_Bay
 
-Rooms = [Ominous_Room, Forest_Entrance, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
-         Floating_Shop, Rain_Forest, Forest_Entrance, Beach, Beach_Village, Below_The_Well]
+Rooms = [Ominous_Room, Forest_Entrance, Forest, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
+         Floating_Shop, Rain_Forest, Beach, Beach_Village, Below_The_Well]
 
 Forest_Entrance.items = [acorn, apple]
 Ominous_Room.items = [apple]
-Forest.items = [axe, wood, wood]
+Forest.items = [axe, wood]
 Person = Player(Ominous_Room)
 Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
-                 "the people living here, i hope you enjoy your stay.", "gatekeeper", [WellKey.name], 100,
+                 "the people living here, i hope you enjoy your stay.", "gatekeeper", [KeyforWell], 100,
                  Broadsword, Knightarmor, 10)
 Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", 'farmer',
-                    [seeds.name, Watermelon.name], 100, Tiller, None, 100)
-
+                    [seeds, Watermelon], 100, Tiller, None, 10)
+VillageLumberjack = Npc("why hello there! thanks for talking to me but i better get back to work,"
+                        " if you would like to help, grab the axe on the floor over there, and chop down"
+                        " some trees. the wood could be very helpful!", "lumberjack", [wood, apple], 100, axe, None, 10)
+Forest.characters = [VillageLumberjack]
 Village.characters = [Gatekeeper, Villagefarmer]
 currenti = []
 playing = True
@@ -401,7 +402,16 @@ while playing:
             print(Person.inventory[add].name)
             add += 1
     if command.lower() in ('talk', 'speak', 't'):
+        tar = 0
+        for i in Person.current_location.characters:
+            print(Person.current_location.characters[tar].name)
+            tar += 1
         a = input("talk to who?")
+        e = 0
+        for i in Person.current_location.characters:
+            if a.lower() == Person.current_location.characters[e].name:
+                Person.talk(Person.current_location.characters[e])
+            e += 1
 
     if command.lower() in ('eat', 'e'):
         e = input("eat what")
@@ -409,12 +419,15 @@ while playing:
             num = 0
             if e.lower() == Person.inventory[num].name:
                 Person.eat(Person.inventory[num])
-            else:
-                num += 1
+            num += 1
+
     if command.lower() in ('use', 'u'):
         s = input('use what?')
-        if s.lower() in ('well key', 'key'):
-            WellKey.use()
+        for i in Person.inventory:
+            num = 0
+            if s.lower() == Person.inventory[num].name:
+                axe.cutdown()
+            num += 1
 
     if command.lower() in ('p', 'pickup'):
         print("items in the area:")

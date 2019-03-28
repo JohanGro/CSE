@@ -132,8 +132,11 @@ class Axe(Weapons):
     @staticmethod
     def cutdown():
         if Person.current_location == Forest:
-            print("you cut down some trees in the nearby area.")
-            Forest.items.append(wood)
+            if wood in Forest.items:
+                print("you cut down some trees in the nearby area.")
+                Forest.items.append(wood)
+            else:
+                print("wood is already in the area")
 
 
 class Fancy(Armor):
@@ -264,9 +267,81 @@ class Player(object):
         self.damage = 10
         self.inventory = []
         self.money = 0
+        self.accuracy = 10
+        self.weapon = fist
 
-    @staticmethod
-    def talk(target):
+    def attack(self, target):
+        rand1 = random.randint(0, 10)
+        rand2 = random.randint(0, 10)
+        print(rand2)
+        if self.accuracy is 10:
+            if rand1 is 0:
+                print("you attack %s for %d damage, critical hit" % (target.name, self.weapon.attack * 2))
+                target.take_damage(self.weapon.attack * 2)
+            if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                print("you attack %s for %d damage" % (target.name, self.weapon.attack))
+                target.take_damage(self.weapon.attack)
+        if self.accuracy in (8, 9):
+            if rand2 in (0, 1, 2, 3, 4, 5, 6, 7, 8):
+                if rand1 is 0:
+                    print("you attack %s for %d damage, critical hit" % (target.name, self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("you attack %s for %d damage" % (target.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            if rand2 in (9, 10):
+                print("you missed the attack.")
+        if self.accuracy in (4, 5, 6, 7):
+            if rand2 in (0, 1, 2, 3, 4, 5):
+                if rand1 is 0:
+                    print("you attack %s for %d damage, critical hit" % (target.name, self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("you attack %s for %d damage" % (target.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            if rand2 in (6, 7, 8, 9, 10):
+                print("you missed the attack.")
+        if self.accuracy in (0, 1, 2, 3):
+            if rand2 in (1, 2):
+                if rand1 is 0:
+                    print("you attack %s for %d damage, critical hit" % (target.name,self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("you attack %s for %d damage" % (target.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            else:
+                print("you missed the attack")
+
+    def battle(self, target):
+        battle = True
+        while battle is True:
+            print("%s:" % target.name)
+            print("%s's health: %s" % (target.name, target.health))
+            print("~-~" * 20)
+            print("your health: %s" % self.health)
+            action = None
+            while action is None:
+                action = input("what would you like to do? attack, item, run")
+            if action.lower() in ['attack', 'a']:
+                Person.attack(target)
+                target.attack(Person)
+            if action.lower() in ['item', 'bag']:
+                e = input("eat what")
+                for i in Person.inventory:
+                    num = 0
+                    if e.lower() == Person.inventory[num].name:
+                        Person.eat(Person.inventory[num])
+                    num += 1
+
+            if action.lower() in ['run', 'r']:
+                ran = random.randint(0, 10)
+                if ran is 10 or 7 or 5:
+                    print("you ran away from further combat.")
+                    battle = False
+                else:
+                    print("you could not get away")
+
+    def talk(self, target):
         print("%s: %s" % (target.name, target.text))
 
     def pickup(self):
@@ -323,6 +398,7 @@ acorn = Consumables("acorn", "a squirrel would enjoy this.", 5, 3)
 apple = Consumables("apple", "a small red fruit", 10, 8)
 axe = Axe("axe", "a huge axe, can be used to chop down trees in certain areas.", 5, None)
 wood = Item("wood", "some wood that can be used to light a fire.", 5)
+fist = Weapons("your fist", "the only weapon you have access to right now.", 5, None)
 
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
 Forest_Entrance = Room("Forest Entrance", "a couple of apple trees grow here. acorns scatter the floor",
@@ -415,18 +491,30 @@ while playing:
 
     if command.lower() in ('eat', 'e'):
         e = input("eat what")
+        num = 0
         for i in Person.inventory:
-            num = 0
             if e.lower() == Person.inventory[num].name:
                 Person.eat(Person.inventory[num])
             num += 1
+
+    if command.lower() in ('battle', 'fight'):
+        e = 0
+        for i in Person.current_location.characters:
+            print(Person.current_location.characters[e].name)
+            e += 1
+        commence = input("fight who?")
+        k = 0
+        for i in Person.current_location.characters:
+            if commence.lower() == Person.current_location.characters[k].name:
+                Person.battle(Person.current_location.characters[k])
+            k += 1
 
     if command.lower() in ('use', 'u'):
         s = input('use what?')
         for i in Person.inventory:
             num = 0
             if s.lower() == Person.inventory[num].name:
-                axe.cutdown()
+                Person.inventory[num].cutdown()
             num += 1
 
     if command.lower() in ('p', 'pickup'):

@@ -23,6 +23,11 @@ class Room(object):
         print("Items: %s" % self.items)
 
 
+class Shop(object):
+    def __init__(self, name, selling):
+        self.name = name
+        self.selling = selling
+
 # Items
 class Item(object):
     def __init__(self, name, description, price):
@@ -210,41 +215,38 @@ class Character(object):
         print(rand2)
         if self.accuracy is 10:
             if rand1 is 0:
-                print("%s attacks %s for %d damage, critical hit" % (self.name, target.name, self.weapon.attack * 2))
+                print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
                 target.take_damage(self.weapon.attack * 2)
             if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
-                print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
+                print("%s attacks for %d damage" % (self.name, self.weapon.attack))
                 target.take_damage(self.weapon.attack)
         if self.accuracy in (8, 9):
             if rand2 in (0, 1, 2, 3, 4, 5, 6, 7, 8):
                 if rand1 is 0:
-                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name,
-                                                                         self.weapon.attack * 2))
+                    print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
                     target.take_damage(self.weapon.attack * 2)
                 if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
-                    print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
+                    print("%s attacks for %d damage" % (self.name, self.weapon.attack))
                     target.take_damage(self.weapon.attack)
             if rand2 in (9, 10):
                 print("they missed the attack.")
         if self.accuracy in (4, 5, 6, 7):
             if rand2 in (0, 1, 2, 3, 4, 5):
                 if rand1 is 0:
-                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name,
-                                                                         self.weapon.attack * 2))
+                    print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
                     target.take_damage(self.weapon.attack * 2)
                 if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
-                    print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
+                    print("%s attacks for %d damage" % (self.name, self.weapon.attack))
                     target.take_damage(self.weapon.attack)
             if rand2 in (6, 7, 8, 9, 10):
                 print("they missed the attack.")
         if self.accuracy in (0, 1, 2, 3):
             if rand2 in (1, 2):
                 if rand1 is 0:
-                    print("%s attacks %s for %d damage, critical hit" % (self.name, target.name,
-                                                                         self.weapon.attack * 2))
+                    print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
                     target.take_damage(self.weapon.attack * 2)
                 if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
-                    print("%s attacks %s for %d damage" % (self.name, target.name, self.weapon.attack))
+                    print("%s attacks for %d damage" % (self.name, self.weapon.attack))
                     target.take_damage(self.weapon.attack)
             else:
                 print("They missed the attack")
@@ -268,7 +270,13 @@ class Player(object):
         self.inventory = []
         self.money = 0
         self.accuracy = 10
-        self.weapon = fist
+        self.weapon = woodsword
+
+    def take_damage(self, attack):
+        self.health -= attack
+        if self.health < 0:
+            self.health = 0
+        print("you have %d health left." % self.health)
 
     def attack(self, target):
         rand1 = random.randint(0, 10)
@@ -321,25 +329,52 @@ class Player(object):
             print("your health: %s" % self.health)
             action = None
             while action is None:
-                action = input("what would you like to do? attack, item, run")
+                action = input("what would you like to do? attack, bag, run")
             if action.lower() in ['attack', 'a']:
                 Person.attack(target)
                 target.attack(Person)
             if action.lower() in ['item', 'bag']:
-                e = input("eat what")
+                w = 0
                 for i in Person.inventory:
-                    num = 0
+                    print(Person.inventory[w].name)
+                    w += 1
+                e = input("eat what")
+                num = 0
+                for i in Person.inventory:
                     if e.lower() == Person.inventory[num].name:
                         Person.eat(Person.inventory[num])
                     num += 1
+                target.attack(Person)
 
             if action.lower() in ['run', 'r']:
                 ran = random.randint(0, 10)
-                if ran is 10 or 7 or 5:
+                if ran in [10, 7, 5]:
                     print("you ran away from further combat.")
                     battle = False
                 else:
                     print("you could not get away")
+                    target.attack(Person)
+
+            if target.health <= 0:
+                print("The %s was taken down." % target.name)
+                print("you got 20 coins. they can be spent at shops.")
+                Person.money += 20
+                print("agh... you beat me...")
+                target.text = "gasp..."
+                battle = False
+
+            if Person.health <= 0:
+                print("you lost the battle")
+                print("you dropped 20 coins.")
+                Person.money -= 20
+                if Person.money <= 0:
+                    Person.money = 0
+                Person.current_location = Village
+                print("Nurse: someone brought you in, i hope your feeling better.")
+                print("your health went up to 100")
+                Person.health = 100
+                target.health = 100
+                battle = False
 
     def talk(self, target):
         print("%s: %s" % (target.name, target.text))
@@ -387,6 +422,7 @@ class Player(object):
 
 
 sword = Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
+carrots = Consumables("carrot", "a hearty vegetable used in cooking.", 20, 30)
 Knightarmor = Armor("Knights armor", "Made of Iron, sturdy", 30, 50)
 Broadsword = Weapons("Broadsword", "A double handed sword.", 40, 50)
 woodBat = Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
@@ -396,9 +432,9 @@ seeds = Consumables("seeds", "Would be better to plant them...", 5, 5)
 Watermelon = Consumables("watermelon", "A big fruit that came from small seeds", 30, 20)
 acorn = Consumables("acorn", "a squirrel would enjoy this.", 5, 3)
 apple = Consumables("apple", "a small red fruit", 10, 8)
-axe = Axe("axe", "a huge axe, can be used to chop down trees in certain areas.", 5, None)
+axe = Axe("axe", "a huge axe, can be used to chop down trees in certain areas.", 10, None)
 wood = Item("wood", "some wood that can be used to light a fire.", 5)
-fist = Weapons("your fist", "the only weapon you have access to right now.", 5, None)
+woodsword = Weapons("your fist", "the only weapon you have access to right now.", 5, None)
 
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
 Forest_Entrance = Room("Forest Entrance", "a couple of apple trees grow here. acorns scatter the floor",
@@ -448,6 +484,7 @@ Beach.south = Ocean_Bay
 Rooms = [Ominous_Room, Forest_Entrance, Forest, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
          Floating_Shop, Rain_Forest, Beach, Beach_Village, Below_The_Well]
 
+Village.items = [carrots]
 Forest_Entrance.items = [acorn, apple]
 Ominous_Room.items = [apple]
 Forest.items = [axe, wood]
@@ -459,7 +496,7 @@ Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", 'fa
                     [seeds, Watermelon], 100, Tiller, None, 10)
 VillageLumberjack = Npc("why hello there! thanks for talking to me but i better get back to work,"
                         " if you would like to help, grab the axe on the floor over there, and chop down"
-                        " some trees. the wood could be very helpful!", "lumberjack", [wood, apple], 100, axe, None, 10)
+                        " some trees. the wood could be very helpful!", "lumberjack", [apple], 100, axe, None, 10)
 Forest.characters = [VillageLumberjack]
 Village.characters = [Gatekeeper, Villagefarmer]
 currenti = []

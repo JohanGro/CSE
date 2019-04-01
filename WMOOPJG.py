@@ -23,10 +23,41 @@ class Room(object):
         print("Items: %s" % self.items)
 
 
-class Shop(object):
-    def __init__(self, name, selling):
-        self.name = name
+class store(object):
+    def __init__(self, selling, location):
         self.selling = selling
+        self.location = location
+
+    def buy(self):
+        if Person.current_location == self.location:
+            print("your money: %s" % Person.money)
+            e = 0
+            for i in self.selling:
+                thing = self.selling[e]
+                print("%s: price - %s" % (thing.name, thing.price))
+                e += 1
+            buying = input("what would you like to buy?")
+            w = 0
+            for i in self.selling:
+                if buying.lower() == self.selling[w].name:
+                    if Person.money >= self.selling[w].price:
+                        Person.money -= self.selling[w].price
+                        print("you brought a %s for %s dollars." % (self.selling[w].name, self.selling[w].price))
+                        Person.inventory.append(self.selling[w])
+                    else:
+                        print("you do not have enough money for this item.")
+                w += 1
+
+    def sell(self):
+        if Person.current_location == self.location:
+            print(Person.money)
+            selling = input("what would you like to sell")
+            r = 0
+            for i in Person.inventory:
+                if selling.lower() == Person.inventory[r].name:
+                    Person.money += Person.inventory[r].price
+                    Person.inventory.remove(Person.inventory[r])
+
 
 # Items
 class Item(object):
@@ -429,12 +460,14 @@ woodBat = Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
 KeyforWell = WellKey("Well Key", "A rusted key passed down from generations before. it grants access to the Well.", None)
 Tiller = Weapons("Tiller", "A tool used by farmers to till the soil.", 3, 5)
 seeds = Consumables("seeds", "Would be better to plant them...", 5, 5)
-Watermelon = Consumables("watermelon", "A big fruit that came from small seeds", 30, 20)
+watermelon = Consumables("watermelon", "A big fruit that came from small seeds", 30, 20)
 acorn = Consumables("acorn", "a squirrel would enjoy this.", 5, 3)
 apple = Consumables("apple", "a small red fruit", 10, 8)
 axe = Axe("axe", "a huge axe, can be used to chop down trees in certain areas.", 10, None)
 wood = Item("wood", "some wood that can be used to light a fire.", 5)
 woodsword = Weapons("your fist", "the only weapon you have access to right now.", 5, None)
+Cake = Consumables("Cake", "a huge cake", 50, 40)
+glider = Glider()
 
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
 Forest_Entrance = Room("Forest Entrance", "a couple of apple trees grow here. acorns scatter the floor",
@@ -480,6 +513,7 @@ Rain_Forest.east = Beach
 Forest_Entrance.east = Rain_Forest
 Beach.north = Beach_Village
 Beach.south = Ocean_Bay
+CentralStore = store([carrots, watermelon], Shop)
 
 Rooms = [Ominous_Room, Forest_Entrance, Forest, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
          Floating_Shop, Rain_Forest, Beach, Beach_Village, Below_The_Well]
@@ -493,12 +527,13 @@ Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not c
                  "the people living here, i hope you enjoy your stay.", "gatekeeper", [KeyforWell], 100,
                  Broadsword, Knightarmor, 10)
 Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", 'farmer',
-                    [seeds, Watermelon], 100, Tiller, None, 10)
+                    [seeds, watermelon], 100, Tiller, None, 10)
 VillageLumberjack = Npc("why hello there! thanks for talking to me but i better get back to work,"
                         " if you would like to help, grab the axe on the floor over there, and chop down"
                         " some trees. the wood could be very helpful!", "lumberjack", [apple], 100, axe, None, 10)
 Forest.characters = [VillageLumberjack]
 Village.characters = [Gatekeeper, Villagefarmer]
+Person.money = 100
 currenti = []
 playing = True
 directions = ['north', 'south', 'east', 'west', 'up', 'down']
@@ -506,6 +541,15 @@ while playing:
     print(Person.current_location.name)
     print(Person.current_location.description)
     command = input(">_")
+    if command.lower() in ('shop', 'buy', 'purchase'):
+            CentralStore.buy()
+    if command.lower() in ('sell', 'trade'):
+            print("items:")
+            add = 0
+            for item in Person.inventory:
+                print(Person.inventory[add].name)
+                add += 1
+            CentralStore.sell()
     if command.lower() in ('q', 'quit', 'exit'):
         playing = False
     if command.lower() in ('inv', 'inventory', 'i'):

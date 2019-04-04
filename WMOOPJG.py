@@ -55,8 +55,12 @@ class store(object):
             r = 0
             for i in Person.inventory:
                 if selling.lower() == Person.inventory[r].name:
-                    Person.money += Person.inventory[r].price
+                    sellprice = Person.inventory[r].price / 2
+                    print("you sold a %s for %s dollars" % (Person.inventory[r].name, sellprice))
+                    Person.money += sellprice
                     Person.inventory.remove(Person.inventory[r])
+                    print("your money is now at %s" % Person.money)
+                r += 1
 
 
 # Items
@@ -210,17 +214,45 @@ class Dirt(Item):
         super(Dirt, self).__init__(name, description, price)
 
 
+class Bandana(Armor):
+    def __init__(self, name, description, protect,  price):
+        super(Bandana, self).__init__(name, description, protect, price)
+
+    @staticmethod
+    def equip():
+        print("now you can traverse through the desert. the hot air wont bother you as much.")
+        Desert.description = "with your bandanna you can continue through."
+        Desert.north = oasis
+        Desert.east = desert_temple
+        desert_temple.north = town
+        oasis.west = town
+
+    @staticmethod
+    def unequip():
+        Desert.description = "The hot air would be too hot to travel any further."
+        print("the desert is now too harsh to traverse")
+        Desert.north = None
+        Desert.east = None
+        if Person.current_location == oasis:
+            Person.current_location = Desert
+        if Person.current_location == desert_temple:
+            Person.current_location = Desert
+        if Person.current_location == town:
+            Person.current_location = Desert
+
+
 # Characters
 
 
 class Character(object):
-    def __init__(self, name, health, weapon, armor, accuracy):
+    def __init__(self, name, health, weapon, armor, accuracy, money):
         self.inventory = []
         self.name = name
         self.health = health
         self.weapon = weapon
         self.armor = armor
         self.accuracy = accuracy
+        self.money = money
 
     def take_damage(self, attack):
         self.health -= attack
@@ -284,8 +316,8 @@ class Character(object):
 
 
 class Npc(Character):
-    def __init__(self, text, name, inventory, health, weapon, armor, accuracy):
-        super(Npc, self).__init__(name, health, weapon, armor, accuracy)
+    def __init__(self, text, name, inventory, health, weapon, armor, accuracy, money):
+        super(Npc, self).__init__(name, health, weapon, armor, accuracy, money)
         self.text = text
         self.inventory = inventory
 
@@ -308,6 +340,34 @@ class Player(object):
         if self.health < 0:
             self.health = 0
         print("you have %d health left." % self.health)
+
+    @staticmethod
+    def equip():
+        equipness = input("equip what")
+        o = 0
+        for i in Person.inventory:
+            if equipness.lower() == Person.inventory[o].name:
+                try:
+                    print("you equipped the %s" % Person.inventory[o].name)
+                    print("%s: %s" % (Person.inventory[o].name, Person.inventory[o].description))
+                    print("the item that was in your weapon slot had been transferred to your inventory")
+                    Person.inventory.append(Person.weapon)
+                    Person.weapon = Person.inventory[o]
+                    Person.inventory.remove(Person.inventory[o])
+                except AttributeError:
+                    print("that item is not a weapon.")
+            o += 1
+
+    @staticmethod
+    def drop(thing):
+        print("you dropped the %s" % thing.name)
+        Person.inventory.remove(thing)
+        p = 0
+        for i in Rooms:
+            if Person.current_location == Rooms[p]:
+                roomlocate = Rooms[p]
+                roomlocate.items.append(thing)
+            p += 1
 
     def attack(self, target):
         rand1 = random.randint(0, 10)
@@ -388,10 +448,9 @@ class Player(object):
 
             if target.health <= 0:
                 print("The %s was taken down." % target.name)
-                print("you got 20 coins. they can be spent at shops.")
-                Person.money += 20
-                print("agh... you beat me...")
-                target.text = "gasp..."
+                print("you got %s coins. they can be spent at shops." % target.money)
+                Person.money += target.money
+                print("gasp...")
                 battle = False
 
             if Person.health <= 0:
@@ -450,6 +509,23 @@ class Player(object):
         :param new_location: The variable containing a room object
         """
         self.current_location = new_location
+        chance = random.randint(0, 5)
+        randbattle = 0
+        if randbattle in [0, 1]:
+            if chance in [0, 1]:
+                Person.battle(weak_monster)
+                weak_monster.health = 20
+                randbattle = 0
+        if randbattle in [2, 3]:
+            if chance in [0, 1, 2, 3, 4, 5, 6]:
+                Person.battle(weak_monster)
+                weak_monster.health = 20
+                randbattle = 0
+        if randbattle in [4, 5]:
+            Person.battle(weak_monster)
+            weak_monster.health = 20
+            randbattle = 0
+        randbattle += 1
 
 
 sword = Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
@@ -462,12 +538,14 @@ Tiller = Weapons("Tiller", "A tool used by farmers to till the soil.", 3, 5)
 seeds = Consumables("seeds", "Would be better to plant them...", 5, 5)
 watermelon = Consumables("watermelon", "A big fruit that came from small seeds", 30, 20)
 acorn = Consumables("acorn", "a squirrel would enjoy this.", 5, 3)
-apple = Consumables("apple", "a small red fruit", 10, 8)
+apple = Consumables("apple", "a small red fruit", 10, 10)
 axe = Axe("axe", "a huge axe, can be used to chop down trees in certain areas.", 10, None)
 wood = Item("wood", "some wood that can be used to light a fire.", 5)
-woodsword = Weapons("your fist", "the only weapon you have access to right now.", 5, None)
+woodsword = Weapons("wood sword", "a fairly common weapon", 5, None)
 Cake = Consumables("Cake", "a huge cake", 50, 40)
 glider = Glider()
+bandana = Bandana("bandana", "this will help you traverse the desert", 0, 50)
+weak_monster = Character("monster", 20, woodBat, None, 10, 5)
 
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
 Forest_Entrance = Room("Forest Entrance", "a couple of apple trees grow here. acorns scatter the floor",
@@ -494,6 +572,10 @@ Beach = Room("Beach", "The beach allows you to see into the vast ocean.", None, 
 Beach_Village = Room("Beach Village", "The people of the village tell you they would be delighted for you to stay.",
                      None, None, Beach)
 Ocean_Bay = Room("Ocean Bay", "The ocean seems endless. It would be dangerous to swim any further.", Beach)
+oasis = Room("Oasis", "a much better and cooler place than the desert.", None, None, Desert)
+desert_temple = Room("desert temple", "The door to the temple is closed.", None, None, None, Desert)
+town = Room("desert town", "the brightly colored town, you wonder how people can live in such hard conditions",
+            None, None, desert_temple, oasis)
 Ominous_Room.north = Forest_Entrance
 Forest_Entrance.north = Main_Road
 Forest_Entrance.west = Forest
@@ -513,6 +595,7 @@ Rain_Forest.east = Beach
 Forest_Entrance.east = Rain_Forest
 Beach.north = Beach_Village
 Beach.south = Ocean_Bay
+Hilltop_Mansion.south = Mountains
 CentralStore = store([carrots, watermelon], Shop)
 
 Rooms = [Ominous_Room, Forest_Entrance, Forest, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
@@ -525,22 +608,35 @@ Forest.items = [axe, wood]
 Person = Player(Ominous_Room)
 Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
                  "the people living here, i hope you enjoy your stay.", "gatekeeper", [KeyforWell], 100,
-                 Broadsword, Knightarmor, 10)
+                 Broadsword, Knightarmor, 10 , 50)
 Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", 'farmer',
-                    [seeds, watermelon], 100, Tiller, None, 10)
+                    [seeds, watermelon], 100, Tiller, None, 10, 10)
 VillageLumberjack = Npc("why hello there! thanks for talking to me but i better get back to work,"
                         " if you would like to help, grab the axe on the floor over there, and chop down"
-                        " some trees. the wood could be very helpful!", "lumberjack", [apple], 100, axe, None, 10)
+                        " some trees. the wood could be very helpful!", "lumberjack", [apple], 100, axe, None, 10, 20)
 Forest.characters = [VillageLumberjack]
 Village.characters = [Gatekeeper, Villagefarmer]
-Person.money = 100
-currenti = []
+Person.money = 0
+Person.inventory.append(bandana)
 playing = True
 directions = ['north', 'south', 'east', 'west', 'up', 'down']
 while playing:
     print(Person.current_location.name)
     print(Person.current_location.description)
     command = input(">_")
+    if command.lower() in ('equip', 'e'):
+        Person.equip()
+    if command.lower() in ('drop', 'd'):
+        o = 0
+        for i in Person.inventory:
+            print(Person.inventory[o].name)
+            o += 1
+        dropping = input("drop what?")
+        o = 0
+        for i in Person.inventory:
+            if dropping.lower() in Person.inventory[o].name:
+                Person.drop(Person.inventory[o])
+            o += 1
     if command.lower() in ('shop', 'buy', 'purchase'):
             CentralStore.buy()
     if command.lower() in ('sell', 'trade'):
@@ -590,13 +686,16 @@ while playing:
                 Person.battle(Person.current_location.characters[k])
             k += 1
 
-    if command.lower() in ('use', 'u'):
-        s = input('use what?')
-        for i in Person.inventory:
+    if command.lower() in ('cut', 'c'):
+        s = input('use what to cut')
+        if s.lower() in ['axe', 'a']:
             num = 0
-            if s.lower() == Person.inventory[num].name:
-                Person.inventory[num].cutdown()
-            num += 1
+            for i in Person.inventory:
+                if s.lower() == Person.inventory[num].name:
+                    Person.inventory[num].cutdown()
+                num += 1
+        else:
+            print("you can not cut anything with this item.")
 
     if command.lower() in ('p', 'pickup'):
         print("items in the area:")
@@ -608,10 +707,12 @@ while playing:
 
     elif command.lower() in directions:
         try:
+            randbattle = 0
             # command = north
             room_object = getattr(Person.current_location, command)
             if room_object is None:
                 raise AttributeError
             Person.move(room_object)
+            randbattle += 1
         except AttributeError:
             print("I can not go that way")

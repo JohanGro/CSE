@@ -2,6 +2,7 @@
   <dictionary name="admt">
     <words>
       <w>angeles</w>
+      <w>bandana</w>
       <w>currenti</w>
       <w>cutdown</w>
       <w>equipness</w>
@@ -11,11 +12,13 @@
       <w>randbattle</w>
       <w>rhode</w>
       <w>samsung</w>
+      <w>sellprice</w>
       <w>villagefarmer</w>
       <w>villagetreasure</w>
       <w>weibe</w>
       <w>weibes</w>
       <w>wiebe</w>
+      <w>woodsword</w>
     </words>
   </dictionary>
 </component>

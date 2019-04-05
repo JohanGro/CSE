@@ -16,6 +16,7 @@ class Room(object):
         self.down = down
         self.characters = []
         self.items = []
+        self.battle = True
 
     def look(self):
         print("~-~" * 20)
@@ -23,7 +24,7 @@ class Room(object):
         print("Items: %s" % self.items)
 
 
-class store(object):
+class Store(object):
     def __init__(self, selling, location):
         self.selling = selling
         self.location = location
@@ -31,34 +32,34 @@ class store(object):
     def buy(self):
         if Person.current_location == self.location:
             print("your money: %s" % Person.money)
-            e = 0
-            for i in self.selling:
-                thing = self.selling[e]
+            ab = 0
+            for z in self.selling:
+                thing = self.selling[ab]
                 print("%s: price - %s" % (thing.name, thing.price))
-                e += 1
+                ab += 1
             buying = input("what would you like to buy?")
-            w = 0
-            for i in self.selling:
-                if buying.lower() == self.selling[w].name:
-                    if Person.money >= self.selling[w].price:
-                        Person.money -= self.selling[w].price
-                        print("you brought a %s for %s dollars." % (self.selling[w].name, self.selling[w].price))
-                        Person.inventory.append(self.selling[w])
+            b = 0
+            for y in self.selling:
+                if buying.lower() == self.selling[b].name:
+                    if Person.money >= self.selling[b].price:
+                        Person.money -= self.selling[b].price
+                        print("you brought a %s for %s dollars." % (self.selling[b].name, self.selling[b].price))
+                        Person.inventory.append(self.selling[b])
                     else:
                         print("you do not have enough money for this item.")
-                w += 1
+                b += 1
 
     def sell(self):
         if Person.current_location == self.location:
             print(Person.money)
             selling = input("what would you like to sell")
             r = 0
-            for i in Person.inventory:
-                if selling.lower() == Person.inventory[r].name:
-                    sellprice = Person.inventory[r].price / 2
-                    print("you sold a %s for %s dollars" % (Person.inventory[r].name, sellprice))
+            for x in Person.inventory:
+                if selling.lower() == Person.inventory[x].name:
+                    sellprice = Person.inventory[x].price / 2
+                    print("you sold a %s for %s dollars" % (Person.inventory[x].name, sellprice))
                     Person.money += sellprice
-                    Person.inventory.remove(Person.inventory[r])
+                    Person.inventory.remove(Person.inventory[x])
                     print("your money is now at %s" % Person.money)
                 r += 1
 
@@ -198,8 +199,8 @@ class Bombs(Weapons):
 
     @staticmethod
     def use():
-        o = input("use what?")
-        if o.lower() in ("bombs", "bomb"):
+        c = input("use what?")
+        if c.lower() in ("bombs", "bomb"):
             print("you blew up whatever was in the room.")
 
 
@@ -260,13 +261,13 @@ class Character(object):
             self.health = 0
         print("%s has %d health left." % (self.name, self.health))
 
-    def pickup(self, item):
-        self.inventory.append(item)
-        print("%s picked up some %s" % (self.name, item.name))
+    def pickup(self, d):
+        self.inventory.append(d)
+        print("%s picked up some %s" % (self.name, d.name))
 
-    def throw(self, target, item):
-        if item.name in self.inventory:
-            self.inventory.remove(item.name)
+    def throw(self, target, v):
+        if v.name in self.inventory:
+            self.inventory.remove(v.name)
             print(self.inventory)
             print("%s threw some dirt" % self.name)
             print("%s's accuracy was lowered" % target.name)
@@ -344,26 +345,26 @@ class Player(object):
     @staticmethod
     def equip():
         equipness = input("equip what")
-        o = 0
-        for i in Person.inventory:
-            if equipness.lower() == Person.inventory[o].name:
+        f = 0
+        for u in Person.inventory:
+            if equipness.lower() == Person.inventory[f].name:
                 try:
-                    print("you equipped the %s" % Person.inventory[o].name)
-                    print("%s: %s" % (Person.inventory[o].name, Person.inventory[o].description))
+                    print("you equipped the %s" % Person.inventory[f].name)
+                    print("%s: %s" % (Person.inventory[f].name, Person.inventory[f].description))
                     print("the item that was in your weapon slot had been transferred to your inventory")
                     Person.inventory.append(Person.weapon)
-                    Person.weapon = Person.inventory[o]
-                    Person.inventory.remove(Person.inventory[o])
+                    Person.weapon = Person.inventory[f]
+                    Person.inventory.remove(Person.inventory[f])
                 except AttributeError:
                     print("that item is not a weapon.")
-            o += 1
+            f += 1
 
     @staticmethod
     def drop(thing):
         print("you dropped the %s" % thing.name)
         Person.inventory.remove(thing)
         p = 0
-        for i in Rooms:
+        for t in Rooms:
             if Person.current_location == Rooms[p]:
                 roomlocate = Rooms[p]
                 roomlocate.items.append(thing)
@@ -403,7 +404,7 @@ class Player(object):
         if self.accuracy in (0, 1, 2, 3):
             if rand2 in (1, 2):
                 if rand1 is 0:
-                    print("you attack %s for %d damage, critical hit" % (target.name,self.weapon.attack * 2))
+                    print("you attack %s for %d damage, critical hit" % (target.name, self.weapon.attack * 2))
                     target.take_damage(self.weapon.attack * 2)
                 if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                     print("you attack %s for %d damage" % (target.name, self.weapon.attack))
@@ -426,15 +427,15 @@ class Player(object):
                 target.attack(Person)
             if action.lower() in ['item', 'bag']:
                 w = 0
-                for i in Person.inventory:
+                for s in Person.inventory:
                     print(Person.inventory[w].name)
                     w += 1
-                e = input("eat what")
-                num = 0
-                for i in Person.inventory:
-                    if e.lower() == Person.inventory[num].name:
-                        Person.eat(Person.inventory[num])
-                    num += 1
+                g = input("eat what")
+                h = 0
+                for r in Person.inventory:
+                    if g.lower() == Person.inventory[h].name:
+                        Person.eat(Person.inventory[h])
+                    h += 1
                 target.attack(Person)
 
             if action.lower() in ['run', 'r']:
@@ -466,19 +467,20 @@ class Player(object):
                 target.health = 100
                 battle = False
 
-    def talk(self, target):
+    @staticmethod
+    def talk(target):
         print("%s: %s" % (target.name, target.text))
 
     def pickup(self):
         resp = input("pickup what?")
-        k = 0
-        for i in self.current_location.items:
-            if resp.lower() == self.current_location.items[k].name:
+        j = 0
+        for q in self.current_location.items:
+            if resp.lower() == self.current_location.items[j].name:
                 if self.current_location in Rooms:
-                    self.inventory.append(self.current_location.items[k])
-                    print("you picked up a %s" % self.current_location.items[k].name)
-                    self.current_location.items.remove(self.current_location.items[k])
-            k += 1
+                    self.inventory.append(self.current_location.items[j])
+                    print("you picked up a %s" % self.current_location.items[j].name)
+                    self.current_location.items.remove(self.current_location.items[j])
+            j += 1
 
     def eat(self, thing):
         if self.health >= 100:
@@ -510,22 +512,25 @@ class Player(object):
         """
         self.current_location = new_location
         chance = random.randint(0, 5)
-        randbattle = 0
-        if randbattle in [0, 1]:
-            if chance in [0, 1]:
+        n = 0
+        if self.current_location.battle is True:
+            if n in [0, 1]:
+                if chance in [0, 1]:
+                    Person.battle(weak_monster)
+                    weak_monster.health = 20
+                    n = 0
+            if n in [2, 3]:
+                if chance in [0, 1, 2, 3]:
+                    Person.battle(weak_monster)
+                    weak_monster.health = 20
+                    n = 0
+            if n in [4, 5]:
                 Person.battle(weak_monster)
                 weak_monster.health = 20
-                randbattle = 0
-        if randbattle in [2, 3]:
-            if chance in [0, 1, 2, 3, 4, 5, 6]:
-                Person.battle(weak_monster)
-                weak_monster.health = 20
-                randbattle = 0
-        if randbattle in [4, 5]:
-            Person.battle(weak_monster)
-            weak_monster.health = 20
-            randbattle = 0
-        randbattle += 1
+                n = 0
+            n += 1
+        if self.current_location.battle is False:
+            print("This is a safe place")
 
 
 sword = Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
@@ -533,7 +538,8 @@ carrots = Consumables("carrot", "a hearty vegetable used in cooking.", 20, 30)
 Knightarmor = Armor("Knights armor", "Made of Iron, sturdy", 30, 50)
 Broadsword = Weapons("Broadsword", "A double handed sword.", 40, 50)
 woodBat = Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
-KeyforWell = WellKey("Well Key", "A rusted key passed down from generations before. it grants access to the Well.", None)
+KeyforWell = WellKey("Well Key", "A rusted key passed down from generations before. it grants access to the Well.",
+                     None)
 Tiller = Weapons("Tiller", "A tool used by farmers to till the soil.", 3, 5)
 seeds = Consumables("seeds", "Would be better to plant them...", 5, 5)
 watermelon = Consumables("watermelon", "A big fruit that came from small seeds", 30, 20)
@@ -544,8 +550,9 @@ wood = Item("wood", "some wood that can be used to light a fire.", 5)
 woodsword = Weapons("wood sword", "a fairly common weapon", 5, None)
 Cake = Consumables("Cake", "a huge cake", 50, 40)
 glider = Glider()
-bandana = Bandana("bandana", "this will help you traverse the desert", 0, 50)
+bandanna = Bandana("bandanna", "this will help you traverse the desert", 0, 50)
 weak_monster = Character("monster", 20, woodBat, None, 10, 5)
+cactus_fruit = Consumables("cactus fruit", "a fruit grown in the desert oasis", 20, 30)
 
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
 Forest_Entrance = Room("Forest Entrance", "a couple of apple trees grow here. acorns scatter the floor",
@@ -596,10 +603,17 @@ Forest_Entrance.east = Rain_Forest
 Beach.north = Beach_Village
 Beach.south = Ocean_Bay
 Hilltop_Mansion.south = Mountains
-CentralStore = store([carrots, watermelon], Shop)
+CentralStore = Store([carrots, watermelon], Shop)
+Ominous_Room.battle = False
+Village.battle = False
+Floating_Shop.battle = False
+Shop.battle = False
+town.battle = False
+oasis.east = town
+oasis.items =
 
 Rooms = [Ominous_Room, Forest_Entrance, Forest, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
-         Floating_Shop, Rain_Forest, Beach, Beach_Village, Below_The_Well]
+         Floating_Shop, Rain_Forest, Beach, Beach_Village, Below_The_Well, oasis, town, desert_temple]
 
 Village.items = [carrots]
 Forest_Entrance.items = [acorn, apple]
@@ -608,7 +622,7 @@ Forest.items = [axe, wood]
 Person = Player(Ominous_Room)
 Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
                  "the people living here, i hope you enjoy your stay.", "gatekeeper", [KeyforWell], 100,
-                 Broadsword, Knightarmor, 10 , 50)
+                 Broadsword, Knightarmor, 10, 50)
 Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", 'farmer',
                     [seeds, watermelon], 100, Tiller, None, 10, 10)
 VillageLumberjack = Npc("why hello there! thanks for talking to me but i better get back to work,"
@@ -617,7 +631,7 @@ VillageLumberjack = Npc("why hello there! thanks for talking to me but i better 
 Forest.characters = [VillageLumberjack]
 Village.characters = [Gatekeeper, Villagefarmer]
 Person.money = 0
-Person.inventory.append(bandana)
+Person.inventory.append(bandanna)
 playing = True
 directions = ['north', 'south', 'east', 'west', 'up', 'down']
 while playing:
@@ -625,7 +639,13 @@ while playing:
     print(Person.current_location.description)
     command = input(">_")
     if command.lower() in ('equip', 'e'):
-        Person.equip()
+        what = input("weapon or clothing")
+        if what.lower() == 'clothing':
+            bandanna.equip()
+        if what.lower() == 'weapon':
+            Person.equip()
+    if command.lower() == 'unequip':
+        bandanna.unequip()
     if command.lower() in ('drop', 'd'):
         o = 0
         for i in Person.inventory:
@@ -666,7 +686,7 @@ while playing:
                 Person.talk(Person.current_location.characters[e])
             e += 1
 
-    if command.lower() in ('eat', 'e'):
+    if command.lower() in ('eat', 'eating'):
         e = input("eat what")
         num = 0
         for i in Person.inventory:
@@ -699,10 +719,10 @@ while playing:
 
     if command.lower() in ('p', 'pickup'):
         print("items in the area:")
-        l = 0
+        m = 0
         for i in Person.current_location.items:
-            print(Person.current_location.items[l].name)
-            l += 1
+            print(Person.current_location.items[m].name)
+            m += 1
         Person.pickup()
 
     elif command.lower() in directions:
@@ -713,6 +733,5 @@ while playing:
             if room_object is None:
                 raise AttributeError
             Person.move(room_object)
-            randbattle += 1
         except AttributeError:
             print("I can not go that way")

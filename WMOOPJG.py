@@ -18,12 +18,6 @@ class Room(object):
         self.items = []
         self.battle = True
 
-    def look(self):
-        print("~-~" * 20)
-        print("%s: %s" % (self.name, self.description))
-        print("Items: %s" % self.items)
-
-
 class Store(object):
     def __init__(self, selling, location):
         self.selling = selling
@@ -55,12 +49,15 @@ class Store(object):
             selling = input("what would you like to sell")
             r = 0
             for x in Person.inventory:
-                if selling.lower() == Person.inventory[x].name:
-                    sellprice = Person.inventory[x].price / 2
-                    print("you sold a %s for %s dollars" % (Person.inventory[x].name, sellprice))
-                    Person.money += sellprice
-                    Person.inventory.remove(Person.inventory[x])
-                    print("your money is now at %s" % Person.money)
+                if selling.lower() == Person.inventory[r].name:
+                    try:
+                        sellprice = Person.inventory[r].price / 2
+                        print("you sold a %s for %s dollars" % (Person.inventory[r].name, sellprice))
+                        Person.money += sellprice
+                        Person.inventory.remove(Person.inventory[r])
+                        print("your money is now at %s" % Person.money)
+                    except TypeError:
+                        print("this item can not be sold, if you do not want it try dropping it")
                 r += 1
 
 
@@ -82,7 +79,7 @@ class WellKey(Key):
         super(WellKey, self).__init__(name, description, price)
 
     def use(self):
-        if self.name in Person.inventory:
+        if self in Person.inventory:
             if Person.current_location == Below_The_Well:
                 sealing_room = Room("The Sealing Room", "A place heavily used to make the troublesome people disappear"
                                                         "a sword lies in the center of the room.", None, None,
@@ -95,7 +92,7 @@ class WellKey(Key):
                 print("The doors to the north and west have opened up.")
                 Below_The_Well.description = "Under the well of the village. the passages continue to the north and" \
                                              " west"
-                Person.inventory.remove(WellKey)
+                Person.inventory.remove(KeyforWell)
                 print("you dropped the key.")
             else:
                 print("you are not in the right location to use this item")
@@ -214,6 +211,11 @@ class Dirt(Item):
     def __init__(self, name, description, price):
         super(Dirt, self).__init__(name, description, price)
 
+    def pickup(self, opposite):
+        print("you throw dirt at %s" % opposite.name)
+        opposite.accuracy -= 1
+        print("%s's accuracy was ")
+
 
 class Bandana(Armor):
     def __init__(self, name, description, protect,  price):
@@ -323,9 +325,80 @@ class Npc(Character):
         self.inventory = inventory
 
 
+class Ghost(Character):
+    def __init__(self, name, health, weapon, armor, accuracy, money):
+        super(Ghost, self).__init__(name, health, weapon, armor, accuracy, money)
+
+    @staticmethod
+    def specialattack():
+        print("unscramble the word to dodge the attack")
+        words = ('owod', 'uragd', 'dgeod')
+        trueword = ('wood', 'guard', 'dodge')
+        wordchoice = random.choice(words)
+        print(wordchoice)
+        solve = input("your guess?")
+        if solve.lower() in trueword:
+            pos = trueword.index(solve.lower())
+            correct = words[pos]
+            if correct == wordchoice:
+                print("you got it correct!")
+                print("you were able to dodge the attack")
+        else:
+            print("you were attacked.")
+            print("you lost 30 health")
+            Person.health -= 30
+
+    def attack(self, target):
+        spe = random.randint(0, 10)
+        rand1 = random.randint(0, 10)
+        rand2 = random.randint(0, 10)
+        print(rand2)
+        if self.accuracy is 10:
+            if spe in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9):
+                self.specialattack()
+            if rand1 is 0:
+                print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
+                target.take_damage(self.weapon.attack * 2)
+            if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                print("%s attacks for %d damage" % (self.name, self.weapon.attack))
+                target.take_damage(self.weapon.attack)
+        if self.accuracy in (8, 9):
+            if rand2 in (0, 1, 2, 3, 4, 5, 6, 7, 8):
+                if spe in (0, 3, 7, 9, 10):
+                    self.specialattack()
+                if rand1 is 0:
+                    print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("%s attacks for %d damage" % (self.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            if rand2 in (9, 10):
+                print("they missed the attack.")
+        if self.accuracy in (4, 5, 6, 7):
+            if rand2 in (0, 1, 2, 3, 4, 5):
+                if spe in (0, 1, 6, 9):
+                    self.specialattack()
+                if rand1 is 0:
+                    print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("%s attacks for %d damage" % (self.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            if rand2 in (6, 7, 8, 9, 10):
+                print("they missed the attack.")
+        if self.accuracy in (0, 1, 2, 3):
+            if rand2 in (1, 2):
+                if rand1 is 0:
+                    print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("%s attacks for %d damage" % (self.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            else:
+                print("They missed the attack")
+
+
 # Player
-
-
 class Player(object):
     def __init__(self, starting_location):
         self.health = 100
@@ -533,7 +606,24 @@ class Player(object):
             print("This is a safe place")
 
 
+class Darksword(Weapons):
+    def __init__(self, name, description, power, price):
+        super(Darksword, self).__init__(name, description, power, price)
+
+    def pickup(self):
+        print("the ground shakes.")
+        print("")
+        print("a figure appears in front of you")
+        print("the figure awaits you to do something")
+        print("will you attack it?")
+        ghostfight = input("yes or no?")
+        if ghostfight.lower() in ('yes', 'y'):
+            currentweapon = Person.weapon
+            Person.weapon = ghostsword
+
+
 sword = Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
+ghostsword = Darksword("ghost sword", "the figures sword from when they lived.", 20, 0)
 carrots = Consumables("carrot", "a hearty vegetable used in cooking.", 20, 30)
 Knightarmor = Armor("Knights armor", "Made of Iron, sturdy", 30, 50)
 Broadsword = Weapons("Broadsword", "A double handed sword.", 40, 50)
@@ -610,7 +700,6 @@ Floating_Shop.battle = False
 Shop.battle = False
 town.battle = False
 oasis.east = town
-oasis.items =
 
 Rooms = [Ominous_Room, Forest_Entrance, Forest, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
          Floating_Shop, Rain_Forest, Beach, Beach_Village, Below_The_Well, oasis, town, desert_temple]
@@ -630,14 +719,22 @@ VillageLumberjack = Npc("why hello there! thanks for talking to me but i better 
                         " some trees. the wood could be very helpful!", "lumberjack", [apple], 100, axe, None, 10, 20)
 Forest.characters = [VillageLumberjack]
 Village.characters = [Gatekeeper, Villagefarmer]
+ghost = Ghost("Ghost", 200, ghostsword, None, 10, 0)
+Person.inventory.append(KeyforWell)
 Person.money = 0
-Person.inventory.append(bandanna)
 playing = True
 directions = ['north', 'south', 'east', 'west', 'up', 'down']
+short_directions = ['n', 's', 'e', 'w', 'u', 'd']
 while playing:
     print(Person.current_location.name)
     print(Person.current_location.description)
     command = input(">_")
+    if command.lower() in short_directions:
+        pos = short_directions.index(command.lower())
+        command = directions[pos]
+    if command.lower() in ('check', 'self'):
+        print("Current Health:")
+        print(Person.health)
     if command.lower() in ('equip', 'e'):
         what = input("weapon or clothing")
         if what.lower() == 'clothing':
@@ -674,6 +771,8 @@ while playing:
         for item in Person.inventory:
             print(Person.inventory[add].name)
             add += 1
+    if command.lower() in ('use', 'try'):
+        KeyforWell.use()
     if command.lower() in ('talk', 'speak', 't'):
         tar = 0
         for i in Person.current_location.characters:

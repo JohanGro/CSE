@@ -82,6 +82,9 @@ class WellKey(Key):
     def use(self):
         if self in Person.inventory:
             if Person.current_location == Below_The_Well:
+                sealing_room = Room("The Sealing Room", "A place heavily used to make the troublesome people disappear"
+                                                        "a sword lies in the center of the room.", None, None,
+                                    Below_The_Well)
                 villagetreasure = Room("The Village Treasury", "a place holding the treasures of the village.")
                 Below_The_Well.north = sealing_room
                 Below_The_Well.west = villagetreasure
@@ -351,50 +354,50 @@ class Ghost(Character):
         spe = random.randint(0, 10)
         rand1 = random.randint(0, 10)
         rand2 = random.randint(0, 10)
-        attack = False
-        while attack is False:
-            if self.accuracy is 10:
-                if spe in (0, 1, 2, 3, 4, 5):
+        print(rand2)
+        if self.accuracy is 10:
+            if spe in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9):
+                self.specialattack()
+            if rand1 is 0:
+                print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
+                target.take_damage(self.weapon.attack * 2)
+            if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                print("%s attacks for %d damage" % (self.name, self.weapon.attack))
+                target.take_damage(self.weapon.attack)
+        if self.accuracy in (8, 9):
+            if rand2 in (0, 1, 2, 3, 4, 5, 6, 7, 8):
+                if spe in (0, 3, 7, 9, 10):
                     self.specialattack()
-                    attack = True
-                    Person.health += 20
-                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9):
+                if rand1 is 0:
+                    print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                     print("%s attacks for %d damage" % (self.name, self.weapon.attack))
                     target.take_damage(self.weapon.attack)
-                    attack = True
-            if self.accuracy in (8, 9):
-                if rand2 in (0, 1, 2, 3, 4, 5, 6, 7, 8):
-                    if spe in (0, 3, 7, 9, 10):
-                        self.specialattack()
-                        attack = True
-                    if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
-                        print("%s attacks for %d damage" % (self.name, self.weapon.attack))
-                        target.take_damage(self.weapon.attack)
-                        attack = True
-                if rand2 in (9, 10):
-                    print("they missed the attack.")
-                    attack = True
-            if self.accuracy in (4, 5, 6, 7):
-                if rand2 in (0, 1, 2, 3, 4, 5):
-                    if spe in (0, 1, 6, 9):
-                        self.specialattack()
-                        attack = True
-                    if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
-                        print("%s attacks for %d damage" % (self.name, self.weapon.attack))
-                        target.take_damage(self.weapon.attack)
-                        attack = True
-                if rand2 in (6, 7, 8, 9, 10):
-                    print("they missed the attack.")
-                    attack = True
-            if self.accuracy in (0, 1, 2, 3):
-                if rand2 in (1, 2):
-                    if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
-                        print("%s attacks for %d damage" % (self.name, self.weapon.attack))
-                        target.take_damage(self.weapon.attack)
-                        attack = True
-                else:
-                    print("They missed the attack")
-                    attack = True
+            if rand2 in (9, 10):
+                print("they missed the attack.")
+        if self.accuracy in (4, 5, 6, 7):
+            if rand2 in (0, 1, 2, 3, 4, 5):
+                if spe in (0, 1, 6, 9):
+                    self.specialattack()
+                if rand1 is 0:
+                    print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("%s attacks for %d damage" % (self.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            if rand2 in (6, 7, 8, 9, 10):
+                print("they missed the attack.")
+        if self.accuracy in (0, 1, 2, 3):
+            if rand2 in (1, 2):
+                if rand1 is 0:
+                    print("%s attacks for %d damage, critical hit" % (self.name, self.weapon.attack * 2))
+                    target.take_damage(self.weapon.attack * 2)
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("%s attacks for %d damage" % (self.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            else:
+                print("They missed the attack")
 
 
 # Player
@@ -592,11 +595,11 @@ class Player(object):
                     weak_monster.health = 20
                     n = 0
             if n in [2, 3]:
-                if chance in [0, 1, 2]:
+                if chance in [0, 1, 2, 3]:
                     Person.battle(weak_monster)
                     weak_monster.health = 20
                     n = 0
-            if n in [5]:
+            if n in [4, 5]:
                 Person.battle(weak_monster)
                 weak_monster.health = 20
                 n = 0
@@ -608,28 +611,6 @@ class Player(object):
 class Darksword(Weapons):
     def __init__(self, name, description, power, price):
         super(Darksword, self).__init__(name, description, power, price)
-
-    @staticmethod
-    def pickup():
-        print("the ground shakes.")
-        print("")
-        print("a figure appears in front of you")
-        print("the figure awaits you to do something")
-        print("will you attack it?")
-        ghostfight = input("yes or no?")
-        if ghostfight.lower() in ('yes', 'y'):
-            currentweapon = Person.weapon
-            Person.weapon = ghostsword
-            Person.battle(ghost)
-            Person.weapon = currentweapon
-            if ghost.health is 0:
-                print("you won the battle and got the flippers, now you can swim in shallow water")
-                print("the ghost swirled around, holding on to its final hope, it ran away.")
-            else:
-                print("you ran away")
-        else:
-            print("you retreated before anything happened")
-            Person.current_location = Below_The_Well
 
 
 sword = Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
@@ -683,8 +664,6 @@ oasis = Room("Oasis", "a much better and cooler place than the desert.", None, N
 desert_temple = Room("desert temple", "The door to the temple is closed.", None, None, None, Desert)
 town = Room("desert town", "the brightly colored town, you wonder how people can live in such hard conditions",
             None, None, desert_temple, oasis)
-sealing_room = Room("The Sealing Room", "A place heavily used to make the troublesome people disappear"
-                                        ", a sword lies in the center of the room.", None, None, Below_The_Well)
 Ominous_Room.north = Forest_Entrance
 Forest_Entrance.north = Main_Road
 Forest_Entrance.west = Forest
@@ -714,7 +693,7 @@ town.battle = False
 oasis.east = town
 
 Rooms = [Ominous_Room, Forest_Entrance, Forest, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
-         Floating_Shop, Rain_Forest, Beach, Beach_Village, Below_The_Well, oasis, town, desert_temple, sealing_room]
+         Floating_Shop, Rain_Forest, Beach, Beach_Village, Below_The_Well, oasis, town, desert_temple]
 
 Village.items = [carrots]
 Forest_Entrance.items = [acorn, apple]
@@ -744,20 +723,6 @@ while playing:
     if command.lower() in short_directions:
         pos = short_directions.index(command.lower())
         command = directions[pos]
-    if command.lower() in ('help', 'tutorial'):
-        print("The commands are:")
-        print("check, equip, unequip, drop, pickup, shop, sell, quit, inventory,")
-        print("use, talk, eat, battle, cut")
-
-    if command.lower() in ('objectives', 'obj', 'objective'):
-        print("current objective:")
-        print("help the village with the entity in the well.")
-        print("*if you talk to other people they might give you other objectives for you*")
-
-    if Person.current_location is sealing_room:
-        if command.lower() in ('pickup', 'p'):
-            ghostsword.pickup()
-
     if command.lower() in ('check', 'self'):
         print("Current Health:")
         print(Person.health)

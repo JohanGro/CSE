@@ -210,7 +210,8 @@ class Dirt(Item):
     def __init__(self, name, description, price):
         super(Dirt, self).__init__(name, description, price)
 
-    def pickup(self, opposite):
+    @staticmethod
+    def pickup(opposite):
         print("you throw dirt at %s" % opposite.name)
         opposite.accuracy -= 1
         print("%s's accuracy was ")
@@ -247,7 +248,7 @@ class Bandana(Armor):
 
 
 class Character(object):
-    def __init__(self, name, health, weapon, armor, accuracy, money):
+    def __init__(self, name, health, weapon, armor, accuracy, money, inithealth):
         self.inventory = []
         self.name = name
         self.health = health
@@ -255,6 +256,7 @@ class Character(object):
         self.armor = armor
         self.accuracy = accuracy
         self.money = money
+        self.inithealth = inithealth
 
     def take_damage(self, attack):
         self.health -= attack
@@ -318,15 +320,15 @@ class Character(object):
 
 
 class Npc(Character):
-    def __init__(self, text, name, inventory, health, weapon, armor, accuracy, money):
-        super(Npc, self).__init__(name, health, weapon, armor, accuracy, money)
+    def __init__(self, text, name, inventory, health, weapon, armor, accuracy, money, inithealth):
+        super(Npc, self).__init__(name, health, weapon, armor, accuracy, money, inithealth)
         self.text = text
         self.inventory = inventory
 
 
 class Ghost(Character):
-    def __init__(self, name, health, weapon, armor, accuracy, money):
-        super(Ghost, self).__init__(name, health, weapon, armor, accuracy, money)
+    def __init__(self, name, health, weapon, armor, accuracy, money, inithealth):
+        super(Ghost, self).__init__(name, health, weapon, armor, accuracy, money, inithealth)
 
     @staticmethod
     def specialattack():
@@ -337,8 +339,8 @@ class Ghost(Character):
         print(wordchoice)
         solve = input("your guess?")
         if solve.lower() in trueword:
-            pos = trueword.index(solve.lower())
-            correct = words[pos]
+            toom = trueword.index(solve.lower())
+            correct = words[toom]
             if correct == wordchoice:
                 print("you got it correct!")
                 print("you were able to dodge the attack")
@@ -357,8 +359,7 @@ class Ghost(Character):
                 if spe in (0, 1, 2, 3, 4, 5):
                     self.specialattack()
                     attack = True
-                    Person.health += 20
-                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9):
+                elif rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9):
                     print("%s attacks for %d damage" % (self.name, self.weapon.attack))
                     target.take_damage(self.weapon.attack)
                     attack = True
@@ -367,7 +368,7 @@ class Ghost(Character):
                     if spe in (0, 3, 7, 9, 10):
                         self.specialattack()
                         attack = True
-                    if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    elif rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                         print("%s attacks for %d damage" % (self.name, self.weapon.attack))
                         target.take_damage(self.weapon.attack)
                         attack = True
@@ -379,7 +380,7 @@ class Ghost(Character):
                     if spe in (0, 1, 6, 9):
                         self.specialattack()
                         attack = True
-                    if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    elif rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                         print("%s attacks for %d damage" % (self.name, self.weapon.attack))
                         target.take_damage(self.weapon.attack)
                         attack = True
@@ -536,7 +537,7 @@ class Player(object):
                 print("Nurse: someone brought you in, i hope your feeling better.")
                 print("your health went up to 100")
                 Person.health = 100
-                target.health = 100
+                target.health = target.inithealth
                 battle = False
 
     @staticmethod
@@ -625,6 +626,8 @@ class Darksword(Weapons):
             if ghost.health is 0:
                 print("you won the battle and got the flippers, now you can swim in shallow water")
                 print("the ghost swirled around, holding on to its final hope, it ran away.")
+                sealing_room.description = "a place to make troublesome people disappear. it feels less scary than" \
+                                           "how it was when you first entered."
             else:
                 print("you ran away")
         else:
@@ -634,7 +637,7 @@ class Darksword(Weapons):
 
 sword = Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
 ghostsword = Darksword("ghost sword", "the figures sword from when they lived.", 20, 0)
-carrots = Consumables("carrot", "a hearty vegetable used in cooking.", 20, 30)
+carrots = Consumables("carrot", "a hearty vegetable used in cooking.", 10, 5)
 Knightarmor = Armor("Knights armor", "Made of Iron, sturdy", 30, 50)
 Broadsword = Weapons("Broadsword", "A double handed sword.", 40, 50)
 woodBat = Weapons("Wood Bat", "A bat commonly used by big enemies.", 5, 5)
@@ -648,11 +651,16 @@ apple = Consumables("apple", "a small red fruit", 10, 10)
 axe = Axe("axe", "a huge axe, can be used to chop down trees in certain areas.", 10, None)
 wood = Item("wood", "some wood that can be used to light a fire.", 5)
 woodsword = Weapons("wood sword", "a fairly common weapon", 5, None)
-Cake = Consumables("Cake", "a huge cake", 50, 40)
+Cake = Consumables("cake", "a huge cake", 50, 40)
 glider = Glider()
 bandanna = Bandana("bandanna", "this will help you traverse the desert", 0, 50)
-weak_monster = Character("monster", 20, woodBat, None, 10, 5)
+weak_monster = Character("monster", 20, woodBat, None, 10, 5, 20)
 cactus_fruit = Consumables("cactus fruit", "a fruit grown in the desert oasis", 20, 30)
+potion = Consumables("potion", "This potion will heal fully!", 100, 50)
+pie = Consumables("pie", "a slice of apple pie", 40, 30)
+starfruit = Consumables("starfruit", "Fruit shaped like a star!", 60, 40)
+peanuts = Consumables("peanuts", "some peanuts", 10, 5)
+wheat = Consumables("wheat", "wheat from the highlands", 15, 10)
 
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
 Forest_Entrance = Room("Forest Entrance", "a couple of apple trees grow here. acorns scatter the floor",
@@ -705,33 +713,37 @@ Forest_Entrance.east = Rain_Forest
 Beach.north = Beach_Village
 Beach.south = Ocean_Bay
 Hilltop_Mansion.south = Mountains
-CentralStore = Store([carrots, watermelon], Shop)
+CentralStore = Store([carrots, watermelon, Cake, potion, starfruit], Shop)
 Ominous_Room.battle = False
 Village.battle = False
 Floating_Shop.battle = False
 Shop.battle = False
 town.battle = False
 oasis.east = town
+Highlands.items = [wheat]
+Rain_Forest.items = [starfruit, watermelon]
+oasis.items = [cactus_fruit]
 
 Rooms = [Ominous_Room, Forest_Entrance, Forest, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
          Floating_Shop, Rain_Forest, Beach, Beach_Village, Below_The_Well, oasis, town, desert_temple, sealing_room]
 
 Village.items = [carrots]
-Forest_Entrance.items = [acorn, apple]
+Forest_Entrance.items = [acorn]
 Ominous_Room.items = [apple]
 Forest.items = [axe, wood]
 Person = Player(Ominous_Room)
 Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
                  "the people living here, i hope you enjoy your stay.", "gatekeeper", [KeyforWell], 100,
-                 Broadsword, Knightarmor, 10, 50)
+                 Broadsword, Knightarmor, 10, 50, 100)
 Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", 'farmer',
-                    [seeds, watermelon], 100, Tiller, None, 10, 10)
+                    [seeds, watermelon], 100, Tiller, None, 10, 10, 100)
 VillageLumberjack = Npc("why hello there! thanks for talking to me but i better get back to work,"
                         " if you would like to help, grab the axe on the floor over there, and chop down"
-                        " some trees. the wood could be very helpful!", "lumberjack", [apple], 100, axe, None, 10, 20)
+                        " some trees. the wood could be very helpful!", "lumberjack", [apple], 100, axe, None, 10, 20,
+                        100)
 Forest.characters = [VillageLumberjack]
 Village.characters = [Gatekeeper, Villagefarmer]
-ghost = Ghost("Ghost", 200, ghostsword, None, 10, 0)
+ghost = Ghost("Ghost", 200, ghostsword, None, 10, 0, 200)
 Person.inventory.append(KeyforWell)
 Person.money = 0
 playing = True

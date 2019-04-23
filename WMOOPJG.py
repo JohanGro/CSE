@@ -1,6 +1,7 @@
 import random
 
 
+objective = ()
 # Room
 
 
@@ -326,6 +327,24 @@ class Npc(Character):
         self.inventory = inventory
 
 
+class Knight(Npc):
+    def __init__(self, text, name, inventory, health, weapon, armor, accuracy, money, inithealth):
+        super(Knight, self).__init__(text, name, inventory, health, weapon, armor, accuracy, money, inithealth)
+
+    def quest(self):
+        print("ah welcome to the village, uh if you have the time, will you please listen to our problem?")
+        input("next >>")
+        print("well you see, recently there has been lots of trouble, coming from one specific place.")
+        input("next >>")
+        print("the well in this place. its been causing trouble recently.")
+        input("")
+        print("there is something in there... and all i can ask is you come to help.")
+        print("please accept to help us.")
+        input("you accepted the quest")
+        print("~~New Objective~~")
+        print("type objectives to check out your current ones.")
+
+
 class Ghost(Character):
     def __init__(self, name, health, weapon, armor, accuracy, money, inithealth):
         super(Ghost, self).__init__(name, health, weapon, armor, accuracy, money, inithealth)
@@ -333,8 +352,8 @@ class Ghost(Character):
     @staticmethod
     def specialattack():
         print("unscramble the word to dodge the attack")
-        words = ('owod', 'uragd', 'dgeod')
-        trueword = ('wood', 'guard', 'dodge')
+        words = ('owod', 'uragd', 'dgeod', 'gthif', 'tatack', 'pjum', 'tea', 'ovme', 'kalw', 'aptr', 'thosg')
+        trueword = ('wood', 'guard', 'dodge', 'fight', 'attack', 'jump', 'eat', 'move', 'walk', 'trap', 'ghost')
         wordchoice = random.choice(words)
         print(wordchoice)
         solve = input("your guess?")
@@ -353,49 +372,37 @@ class Ghost(Character):
         spe = random.randint(0, 10)
         rand1 = random.randint(0, 10)
         rand2 = random.randint(0, 10)
-        attack = False
-        while attack is False:
-            if self.accuracy is 10:
-                if spe in (0, 1, 2, 3, 4, 5):
+        if self.accuracy is 10:
+            if spe in (0, 1, 2, 3, 4, 5):
+                self.specialattack()
+            elif rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9):
+                print("%s attacks for %d damage" % (self.name, self.weapon.attack))
+                target.take_damage(self.weapon.attack)
+        if self.accuracy in (8, 9):
+            if rand2 in (0, 1, 2, 3, 4, 5, 6, 7, 8):
+                if spe in (0, 3, 7, 9, 10):
                     self.specialattack()
-                    attack = True
-                elif rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9):
+                elif rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
                     print("%s attacks for %d damage" % (self.name, self.weapon.attack))
                     target.take_damage(self.weapon.attack)
-                    attack = True
-            if self.accuracy in (8, 9):
-                if rand2 in (0, 1, 2, 3, 4, 5, 6, 7, 8):
-                    if spe in (0, 3, 7, 9, 10):
-                        self.specialattack()
-                        attack = True
-                    elif rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
-                        print("%s attacks for %d damage" % (self.name, self.weapon.attack))
-                        target.take_damage(self.weapon.attack)
-                        attack = True
-                if rand2 in (9, 10):
-                    print("they missed the attack.")
-                    attack = True
-            if self.accuracy in (4, 5, 6, 7):
-                if rand2 in (0, 1, 2, 3, 4, 5):
-                    if spe in (0, 1, 6, 9):
-                        self.specialattack()
-                        attack = True
-                    elif rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
-                        print("%s attacks for %d damage" % (self.name, self.weapon.attack))
-                        target.take_damage(self.weapon.attack)
-                        attack = True
-                if rand2 in (6, 7, 8, 9, 10):
-                    print("they missed the attack.")
-                    attack = True
-            if self.accuracy in (0, 1, 2, 3):
-                if rand2 in (1, 2):
-                    if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
-                        print("%s attacks for %d damage" % (self.name, self.weapon.attack))
-                        target.take_damage(self.weapon.attack)
-                        attack = True
-                else:
-                    print("They missed the attack")
-                    attack = True
+            if rand2 in (9, 10):
+                print("they missed the attack.")
+        if self.accuracy in (4, 5, 6, 7):
+            if rand2 in (0, 1, 2, 3, 4, 5):
+                if spe in (0, 1, 6, 9):
+                    self.specialattack()
+                elif rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("%s attacks for %d damage" % (self.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            if rand2 in (6, 7, 8, 9, 10):
+                print("they missed the attack.")
+        if self.accuracy in (0, 1, 2, 3):
+            if rand2 in (1, 2):
+                if rand1 in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+                    print("%s attacks for %d damage" % (self.name, self.weapon.attack))
+                    target.take_damage(self.weapon.attack)
+            else:
+                print("They missed the attack")
 
 
 # Player
@@ -446,7 +453,6 @@ class Player(object):
     def attack(self, target):
         rand1 = random.randint(0, 10)
         rand2 = random.randint(0, 10)
-        print(rand2)
         if self.accuracy is 10:
             if rand1 is 0:
                 print("you attack %s for %d damage, critical hit" % (target.name, self.weapon.attack * 2))
@@ -512,13 +518,8 @@ class Player(object):
                 target.attack(Person)
 
             if action.lower() in ['run', 'r']:
-                ran = random.randint(0, 10)
-                if ran in [10, 7, 5]:
-                    print("you ran away from further combat.")
-                    battle = False
-                else:
-                    print("you could not get away")
-                    target.attack(Person)
+                print("you ran away from further combat.")
+                battle = False
 
             if target.health <= 0:
                 print("The %s was taken down." % target.name)
@@ -732,7 +733,7 @@ Forest_Entrance.items = [acorn]
 Ominous_Room.items = [apple]
 Forest.items = [axe, wood]
 Person = Player(Ominous_Room)
-Gatekeeper = Npc("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
+Gatekeeper = Knight("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
                  "the people living here, i hope you enjoy your stay.", "gatekeeper", [KeyforWell], 100,
                  Broadsword, Knightarmor, 10, 50, 100)
 Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", 'farmer',

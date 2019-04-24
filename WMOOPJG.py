@@ -1,7 +1,7 @@
 import random
 
 
-objective = ()
+objective = []
 # Room
 
 
@@ -337,12 +337,14 @@ class Knight(Npc):
         print("well you see, recently there has been lots of trouble, coming from one specific place.")
         input("next >>")
         print("the well in this place. its been causing trouble recently.")
-        input("")
+        input("next >>")
         print("there is something in there... and all i can ask is you come to help.")
         print("please accept to help us.")
         input("you accepted the quest")
         print("~~New Objective~~")
         print("type objectives to check out your current ones.")
+        objective.append("Help the village with the monster in the well.")
+        print(objective[0])
 
 
 class Ghost(Character):
@@ -403,6 +405,12 @@ class Ghost(Character):
                     target.take_damage(self.weapon.attack)
             else:
                 print("They missed the attack")
+        if self.health <= 0:
+            print("~~Objective Complete!~~")
+            print(objective[0])
+            Gatekeeper.text = "Thank you so much, i see you have taken care of that monster. " \
+                              "i hope you found something useful to help you," \
+                              " i wish i could give you something for the help."
 
 
 # Player
@@ -733,9 +741,9 @@ Forest_Entrance.items = [acorn]
 Ominous_Room.items = [apple]
 Forest.items = [axe, wood]
 Person = Player(Ominous_Room)
-Gatekeeper = Knight("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to"
-                 "the people living here, i hope you enjoy your stay.", "gatekeeper", [KeyforWell], 100,
-                 Broadsword, Knightarmor, 10, 50, 100)
+Gatekeeper = Knight("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to the people living"
+                    " here, i hope you enjoy your stay.", "gatekeeper", [KeyforWell], 100, Broadsword, Knightarmor, 10,
+                    50, 100)
 Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", 'farmer',
                     [seeds, watermelon], 100, Tiller, None, 10, 10, 100)
 VillageLumberjack = Npc("why hello there! thanks for talking to me but i better get back to work,"
@@ -744,7 +752,7 @@ VillageLumberjack = Npc("why hello there! thanks for talking to me but i better 
                         100)
 Forest.characters = [VillageLumberjack]
 Village.characters = [Gatekeeper, Villagefarmer]
-ghost = Ghost("Ghost", 200, ghostsword, None, 10, 0, 200)
+ghost = Ghost("Ghost", 2, ghostsword, None, 10, 0, 200)
 Person.inventory.append(KeyforWell)
 Person.money = 0
 playing = True
@@ -822,6 +830,8 @@ while playing:
         for i in Person.current_location.characters:
             if a.lower() == Person.current_location.characters[e].name:
                 Person.talk(Person.current_location.characters[e])
+                if a.lower() == Gatekeeper.name:
+                    Gatekeeper.quest()
             e += 1
 
     if command.lower() in ('eat', 'eating'):

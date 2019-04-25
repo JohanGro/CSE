@@ -345,6 +345,12 @@ class Knight(Npc):
         print("type objectives to check out your current ones.")
         objective.append("Help the village with the monster in the well.")
         print(objective[0])
+        input("next >>")
+        print("your going to need this if you are going down there.")
+        print("next >>")
+        print("good luck, my friend.")
+        Person.inventory.append(KeyforWell)
+        print("you obtained the %s" % KeyforWell.name)
 
 
 class Ghost(Character):
@@ -758,6 +764,7 @@ Person.money = 0
 playing = True
 directions = ['north', 'south', 'east', 'west', 'up', 'down']
 short_directions = ['n', 's', 'e', 'w', 'u', 'd']
+firstGate = True
 while playing:
     print(Person.current_location.name)
     print(Person.current_location.description)
@@ -771,9 +778,7 @@ while playing:
         print("use, talk, eat, battle, cut")
 
     if command.lower() in ('objectives', 'obj', 'objective'):
-        print("current objective:")
-        print("help the village with the entity in the well.")
-        print("*if you talk to other people they might give you other objectives for you*")
+        print(objective)
 
     if Person.current_location is sealing_room:
         if command.lower() in ('pickup', 'p'):
@@ -831,7 +836,9 @@ while playing:
             if a.lower() == Person.current_location.characters[e].name:
                 Person.talk(Person.current_location.characters[e])
                 if a.lower() == Gatekeeper.name:
-                    Gatekeeper.quest()
+                    if firstGate is True:
+                        Gatekeeper.quest()
+                        firstGate = False
             e += 1
 
     if command.lower() in ('eat', 'eating'):

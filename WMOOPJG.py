@@ -758,8 +758,7 @@ VillageLumberjack = Npc("why hello there! thanks for talking to me but i better 
                         100)
 Forest.characters = [VillageLumberjack]
 Village.characters = [Gatekeeper, Villagefarmer]
-ghost = Ghost("Ghost", 2, ghostsword, None, 10, 0, 200)
-Person.inventory.append(KeyforWell)
+ghost = Ghost("Ghost", 200, ghostsword, None, 10, 0, 200)
 Person.money = 0
 playing = True
 directions = ['north', 'south', 'east', 'west', 'up', 'down']
@@ -779,6 +778,13 @@ while playing:
 
     if command.lower() in ('objectives', 'obj', 'objective'):
         print(objective)
+
+    if command.lower() in ("heal", "nurse"):
+        if Person.current_location == Village:
+            print("your wounds were healed!")
+            Person.health = 100
+        else:
+            print("your not in the right location for this")
 
     if Person.current_location is sealing_room:
         if command.lower() in ('pickup', 'p'):

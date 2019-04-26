@@ -164,13 +164,9 @@ class Axe(Weapons):
         super(Axe, self).__init__(name, description, power, price)
 
     @staticmethod
-    def hit():
-        print("you hit the enemy with the bottom of the axe.")
-
-    @staticmethod
     def cutdown():
         if Person.current_location == Forest:
-            if wood in Forest.items:
+            if wood not in Forest.items:
                 print("you cut down some trees in the nearby area.")
                 Forest.items.append(wood)
             else:
@@ -343,7 +339,7 @@ class Knight(Npc):
         input("you accepted the quest")
         print("~~New Objective~~")
         print("type objectives to check out your current ones.")
-        objective.append("Help the village with the monster in the well.")
+        objective.append("Main Quest: The Bottom of the Well.")
         print(objective[0])
         input("next >>")
         print("your going to need this if you are going down there.")
@@ -351,6 +347,39 @@ class Knight(Npc):
         print("good luck, my friend.")
         Person.inventory.append(KeyforWell)
         print("you obtained the %s" % KeyforWell.name)
+
+class Lumberjack(Npc):
+    def __init__(self, text, name, inventory, health, weapon, armor, accuracy, money, inithealth):
+        super(Lumberjack, self).__init__(text, name, inventory, health, weapon, armor, accuracy, money, inithealth)
+        self.woodleft = 5
+
+    def quest(self):
+        print("oh talking about that axe, how about you go help me get some wood")
+        input("Next >>")
+        print("how about if you get some wood, come back to me")
+        input("Next >>")
+        print("once i have 5 wood from you ill give you something!")
+        input("Next >>")
+        print("~~New Objective~~")
+        objective.append("Side Quest: Wood Collector")
+        print("current quests: %s" % objective)
+
+    def Woodcollector(self):
+        if wood in Person.inventory:
+            print("this wood is for me?")
+            print("why thank you! you wont regret this!")
+            self.woodleft -= 1
+            print("i only need %s more wood!" % self.woodleft)
+        if self.woodleft is 0:
+            print("wow, you really got me all the wood i needed!")
+            input("Next >>")
+            print("well thank you so much")
+            input("Next >>")
+            print("here take this cake my wife made, its not much but i hope it helps you!")
+            print("~~Objective Complete~~")
+            Person.inventory.append(Cake)
+
+
 
 
 class Ghost(Character):
@@ -571,28 +600,31 @@ class Player(object):
             j += 1
 
     def eat(self, thing):
-        if self.health >= 100:
-            q = input("you will not gain anything from eating this item, would you still like to eat it?")
-            if q.lower() in ("yes", "y"):
-                print("you ate %s and did not gain anything." % thing.name)
-                self.inventory.remove(thing)
-            else:
-                print("you did not eat the %s" % thing.name)
-        else:
-            print("current health: %s " % self.health)
-            self.health += thing.health
+        try:
             if self.health >= 100:
-                nf = self.health - 100  # Nf for Not Finished calculations
-                nf -= thing.health
-                final = nf - nf - nf
-                self.health = 100
-                print("you ate the %s and gained %s health!" % (thing.name, final))
-                print("your health is at %s" % self.health)
-                self.inventory.remove(thing)
+                q = input("you will not gain anything from eating this item, would you still like to eat it?")
+                if q.lower() in ("yes", "y"):
+                    print("you ate %s and did not gain anything." % thing.name)
+                    self.inventory.remove(thing)
+                else:
+                    print("you did not eat the %s" % thing.name)
             else:
-                print("you ate the %s and gained %s health!" % (thing.name, thing.health))
-                print("your health is at %s" % self.health)
-                self.inventory.remove(thing)
+                print("current health: %s " % self.health)
+                self.health += thing.health
+                if self.health >= 100:
+                    nf = self.health - 100  # Nf for Not Finished calculations
+                    nf -= thing.health
+                    final = nf - nf - nf
+                    self.health = 100
+                    print("you ate the %s and gained %s health!" % (thing.name, final))
+                    print("your health is at %s" % self.health)
+                    self.inventory.remove(thing)
+                else:
+                    print("you ate the %s and gained %s health!" % (thing.name, thing.health))
+                    print("your health is at %s" % self.health)
+                    self.inventory.remove(thing)
+        except AttributeError:
+            print("you can not eat that item")
 
     def move(self, new_location):
         """This method moves a character to a new location
@@ -752,9 +784,9 @@ Gatekeeper = Knight("Ah, welcome to the village, im the gatekeeper, please do no
                     50, 100)
 Villagefarmer = Npc("oh, hello! have you said hello to the Gatekeeper yet?", 'farmer',
                     [seeds, watermelon], 100, Tiller, None, 10, 10, 100)
-VillageLumberjack = Npc("why hello there! thanks for talking to me but i better get back to work,"
-                        " if you would like to help, grab the axe on the floor over there, and chop down"
-                        " some trees. the wood could be very helpful!", "lumberjack", [apple], 100, axe, None, 10, 20,
+VillageLumberjack = Lumberjack("why hello there! thanks for talking to me but i better get back to work, if you would"
+                               " like to help, grab the axe on the floor over there, and chop down some trees. the wood"
+                               " could be very helpful!", "lumberjack", [apple], 100, axe, None, 10, 20,
                         100)
 Forest.characters = [VillageLumberjack]
 Village.characters = [Gatekeeper, Villagefarmer]
@@ -764,6 +796,7 @@ playing = True
 directions = ['north', 'south', 'east', 'west', 'up', 'down']
 short_directions = ['n', 's', 'e', 'w', 'u', 'd']
 firstGate = True
+firstwood = True
 while playing:
     print(Person.current_location.name)
     print(Person.current_location.description)
@@ -845,6 +878,13 @@ while playing:
                     if firstGate is True:
                         Gatekeeper.quest()
                         firstGate = False
+                if a.lower() == VillageLumberjack.name:
+                    if firstwood is True:
+                        VillageLumberjack.quest()
+                        firstwood = False
+                    if wood in Person.inventory:
+                        VillageLumberjack.Woodcollector()
+
             e += 1
 
     if command.lower() in ('eat', 'eating'):

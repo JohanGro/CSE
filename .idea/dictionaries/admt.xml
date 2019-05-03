@@ -1,6 +1,7 @@
 <component name="ProjectDictionaryState">
   <dictionary name="admt">
     <words>
+      <w>allnum</w>
       <w>angeles</w>
       <w>aptr</w>
       <w>bandana</w>
@@ -11,6 +12,7 @@
       <w>dgeod</w>
       <w>dissapear</w>
       <w>equipness</w>
+      <w>evenadd</w>
       <w>ghostfight</w>
       <w>ghostsword</w>
       <w>gthif</w>
@@ -19,6 +21,7 @@
       <w>keyfor</w>
       <w>keyless</w>
       <w>knightarmor</w>
+      <w>oddadd</w>
       <w>ovme</w>
       <w>owod</w>
       <w>pjum</w>
@@ -31,12 +34,15 @@
       <w>thosg</w>
       <w>toom</w>
       <w>trueword</w>
+      <w>unequip</w>
       <w>uragd</w>
       <w>villagefarmer</w>
       <w>villagetreasure</w>
       <w>weibe</w>
       <w>weibes</w>
       <w>wiebe</w>
+      <w>woodcollector</w>
+      <w>woodleft</w>
       <w>woodsword</w>
       <w>wordchoice</w>
     </words>

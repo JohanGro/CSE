@@ -172,12 +172,23 @@ class Axe(Weapons):
             else:
                 print("wood is already in the area")
 
+
 class Flippers(Armor):
     def __init__(self, name, description, protect, price):
         super(Flippers, self).__init__(name, description, protect, price)
 
-    def equip(self):
+    @staticmethod
+    def equip():
+        Ocean_Bay.description = "you feel like you can swim forever"
+        Ocean = Room("Ocean", "The wide ocean. you see a small island up ahead.", Ocean_Bay)
+        Deep_Ocean = Room("Deep Ocean", "Fish swim by you. if you had something to breath maybe you could"
+                                        "explore the bottom")
+        Ocean_Bay.south = Ocean
+        
         print("you can swim in water")
+
+    def unequip(self):
+        print("you can no longer swim in the water.")
 
 
 class Fancy(Armor):
@@ -468,6 +479,7 @@ class Player(object):
         self.money = 0
         self.accuracy = 10
         self.weapon = woodsword
+        self.clothing = None
 
     def take_damage(self, attack):
         self.health -= attack
@@ -476,17 +488,32 @@ class Player(object):
         print("you have %d health left." % self.health)
 
     def clothingequip(self):
-        o = 0
-        for i in Person.inventory:
-            print(Person.inventory[o])
-            o += 1
-        cloquip = input("what would you like to equip")
-        q = 0
-        for i in Person.inventory:
-            if cloquip.lower() == Person.inventory[q].name:
-                Person.inventory[q].equip
-                print("You equipped %s" % Person.inventory[q].name)
-            q += 1
+        try:
+            o = 0
+            for i in Person.inventory:
+                print(Person.inventory[o].name)
+                o += 1
+            cloquip = input("what would you like to equip")
+            q = 0
+            for i in Person.inventory:
+                if cloquip.lower() == Person.inventory[q].name:
+                    if Person.clothing is None:
+                        Person.clothing = Person.inventory[q]
+                        Person.inventory.remove(Person.inventory[q])
+                        Person.clothing.equip()
+                    else:
+                        Person.inventory.append(Person.clothing)
+                        Person.clothing.unequip()
+                        Person.clothing = Person.inventory[q]
+                        print("the item in your clothing slot moved to your inventory")
+                        Person.inventory.remove(Person.inventory[q])
+                        Person.clothing.equip()
+                q += 1
+        except AttributeError:
+            print("that item is not clothing.")
+            Person.inventory.append(Person.clothing)
+            Person.clothing = None
+
 
     @staticmethod
     def equip():
@@ -731,6 +758,7 @@ pie = Consumables("pie", "a slice of apple pie", 40, 30)
 starfruit = Consumables("starfruit", "Fruit shaped like a star!", 60, 40)
 peanuts = Consumables("peanuts", "some peanuts", 10, 5)
 wheat = Consumables("wheat", "wheat from the highlands", 15, 10)
+flippers = Flippers("flippers", "some rubber flippers to help you swim.", 5, None)
 
 Ominous_Room = Room("Ominous room", "It's a room with light blue walls. a large gate blocks the north exit.")
 Forest_Entrance = Room("Forest Entrance", "a couple of apple trees grow here. acorns scatter the floor",
@@ -819,7 +847,8 @@ directions = ['north', 'south', 'east', 'west', 'up', 'down']
 short_directions = ['n', 's', 'e', 'w', 'u', 'd']
 firstGate = True
 firstwood = True
-Person.inventory.append(Bandana)
+Person.inventory.append(bandanna)
+Person.inventory.append(flippers)
 Person.clothingequip()
 while playing:
     print(Person.current_location.name)
@@ -853,7 +882,7 @@ while playing:
     if command.lower() in ('equip', 'e'):
         what = input("weapon or clothing")
         if what.lower() == 'clothing':
-            bandanna.equip()
+            Person.clothingequip()
         if what.lower() == 'weapon':
             Person.equip()
     if command.lower() in ('drop', 'd'):
@@ -869,6 +898,11 @@ while playing:
             o += 1
     if command.lower() in ('shop', 'buy', 'purchase'):
         CentralStore.buy()
+    if command.lower() in ('clothing', 'ci'):
+        try:
+            print(Person.clothing.name)
+        except AttributeError:
+            print("you have nothing in your clothing slot")
     if command.lower() in ('sell', 'trade'):
         print("items:")
         add = 0

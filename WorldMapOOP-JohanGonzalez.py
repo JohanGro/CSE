@@ -180,14 +180,18 @@ class Flippers(Armor):
     @staticmethod
     def equip():
         Ocean_Bay.description = "you feel like you can swim forever"
-        Ocean = Room("Ocean", "The wide ocean. you see a small island up ahead.", Ocean_Bay)
-        Deep_Ocean = Room("Deep Ocean", "Fish swim by you. if you had something to breath maybe you could"
-                                        "explore the bottom")
         Ocean_Bay.south = Ocean
-        
+        Deep_Ocean.north = Ocean
+        Ocean.south = Deep_Ocean
+
         print("you can swim in water")
 
     def unequip(self):
+        Ocean_Bay.description = "The ocean seems endless. It would be dangerous to swim any further."
+        Ocean_Bay.south = None
+        if Person.current_location in (Ocean, Deep_Ocean):
+            print("you almost drowned in the water! luckily someone found you and took you back to the bay.")
+            Person.current_location = Ocean_Bay
         print("you can no longer swim in the water.")
 
 
@@ -379,7 +383,7 @@ class Lumberjack(Npc):
         input("Next >>")
         print("how about if you get some wood, come back to me")
         input("Next >>")
-        print("once i have 5 wood from you ill give you something!")
+        print("once i have 5 wood from you i'll give you something!")
         input("Next >>")
         print("~~New Objective~~")
         objective.append("Side Quest: Wood Collector")
@@ -487,7 +491,8 @@ class Player(object):
             self.health = 0
         print("you have %d health left." % self.health)
 
-    def clothingequip(self):
+    @staticmethod
+    def clothingequip():
         try:
             o = 0
             for i in Person.inventory:
@@ -513,7 +518,6 @@ class Player(object):
             print("that item is not clothing.")
             Person.inventory.append(Person.clothing)
             Person.clothing = None
-
 
     @staticmethod
     def equip():
@@ -791,6 +795,9 @@ town = Room("desert town", "the brightly colored town, you wonder how people can
             None, None, desert_temple, oasis)
 sealing_room = Room("The Sealing Room", "A place heavily used to make the troublesome people disappear"
                                         ", a sword lies in the center of the room.", None, None, Below_The_Well)
+Ocean = Room("Ocean", "The wide ocean. you see a small island up ahead.", Ocean_Bay)
+Deep_Ocean = Room("Deep Ocean", "Fish swim by you. if you had something to breath maybe you could"
+                                " explore below")
 Ominous_Room.north = Forest_Entrance
 Forest_Entrance.north = Main_Road
 Forest_Entrance.west = Forest
@@ -849,7 +856,6 @@ firstGate = True
 firstwood = True
 Person.inventory.append(bandanna)
 Person.inventory.append(flippers)
-Person.clothingequip()
 while playing:
     print(Person.current_location.name)
     print(Person.current_location.description)

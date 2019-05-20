@@ -931,7 +931,7 @@ Forest_Entrance.items = [acorn]
 Ominous_Room.items = [apple]
 Forest.items = [axe, wood]
 Person = Player(Ominous_Room)
-Seafather = Oceanperson("hm...", "ocean father", [apple], 100, axe, None, 10, 30, 100)
+OceanMan = Oceanperson("hm...", "ocean man", [apple], 100, axe, None, 10, 30, 100)
 Gatekeeper = Knight("Ah, welcome to the village, im the gatekeeper, please do not cause any harm to the people living"
                     " here, i hope you enjoy your stay.", "gatekeeper", [KeyforWell], 100, Broadsword, Knightarmor, 10,
                     50, 100)
@@ -942,7 +942,7 @@ VillageLumberjack = Lumberjack("why hello there! thanks for talking to me but i 
                                " could be very helpful!", "lumberjack", [apple], 100, axe, None, 10, 20, 100)
 Forest.characters = [VillageLumberjack]
 Village.characters = [Gatekeeper, Villagefarmer]
-Ocean_Bay.characters = [Seafather]
+Ocean_Bay.characters = [OceanMan]
 ghost = Ghost("Ghost", 200, ghostsword, None, 10, 0, 200)
 Person.money = 0
 playing = True
@@ -956,6 +956,7 @@ check1 = False
 secondfish = False
 thirdfish = False
 deadmon = False
+name = True
 while playing:
     print(Person.current_location.name)
     print(Person.current_location.description)
@@ -971,7 +972,7 @@ while playing:
     if command.lower() in ('objectives', 'obj', 'objective'):
         print(objective)
 
-    if command.lower() in ("Check", "ch"):
+    if command.lower() in ("check", "ch"):
         if check1 is True:
             if Person.current_location == island:
                 print("you find a bag seeming to belong to a child")
@@ -982,20 +983,6 @@ while playing:
                 input("Next >>")
                 secondfish = True
                 check1 = False
-
-    if Person.current_location == Village_Treasury:
-        if command.lower() in ("pickup", "p"):
-            if firstmoney is True:
-                print("There is tons of money on the floor")
-                print("you shouldn't take it though")
-                take = input("will you?")
-                if take.lower() is "yes":
-                    print("you took the money.")
-                    print("there was 1,000 dollars here!")
-                    Person.money += 1000
-                    firstmoney = False
-                else:
-                    print("you did not take the money.")
 
     if command.lower() in ("heal", "nurse"):
         if Person.current_location == Village:
@@ -1073,17 +1060,22 @@ while playing:
                         firstwood = False
                     if wood in Person.inventory:
                         VillageLumberjack.woodcollector()
-                if a.lower() == Seafather.name:
+                if a.lower() == OceanMan.name:
+                    if name is True:
+                        print("We cant do that. it might be copyrighted...")
+                        print("-Ocean Man changed his name to Ocean Person-")
+                        OceanMan.name = "ocean person"
+                        print("there, much better.")
+                        name = False
                     if firstfish is True:
-                        Seafather.quest()
+                        OceanMan.quest()
                         firstfish = False
                         check1 = True
                     if secondfish is True:
-                        Seafather.news()
+                        OceanMan.news()
                         secondfish = False
 
             e += 1
-
     if command.lower() in ('eat', 'eating'):
         e = input("eat what")
         num = 0
@@ -1115,13 +1107,25 @@ while playing:
         else:
             print("you can not cut anything with this item.")
 
-    if command.lower() in ('p', 'pickup'):
+    if 'pickup' in command.lower():
         print("items in the area:")
         m = 0
         for i in Person.current_location.items:
             print(Person.current_location.items[m].name)
             m += 1
         Person.pickup()
+        if Person.current_location is Village_Treasury:
+            if firstmoney is True:
+                print("There is tons of money on the floor")
+                print("you shouldn't take it though")
+                take = input("will you?")
+                if take.lower() is "yes":
+                    print("you took the money.")
+                    print("there was 1,000 dollars here!")
+                    Person.money += 1000
+                    firstmoney = False
+                else:
+                    print("you did not take the money.")
 
     elif command.lower() in directions:
         try:

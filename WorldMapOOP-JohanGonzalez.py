@@ -3,9 +3,6 @@ objective = []
 # Room
 
 
-firstkill = True
-
-
 class Room(object):
     def __init__(self, name, description="", north=None, east=None, south=None, west=None, up=None, down=None):
         self.name = name
@@ -84,6 +81,7 @@ class WellKey(Key):
     def use(self):
         if self in Person.inventory:
             if Person.current_location == Below_The_Well:
+                villagetreasure = Room("The Village Treasury", "a place holding the treasures of the village.")
                 Below_The_Well.north = sealing_room
                 Below_The_Well.west = villagetreasure
                 sealing_room.south = Below_The_Well
@@ -275,14 +273,10 @@ class Swimsuit(Armor):
     def equip():
         print("now you can swim underwater and also farther than ever before.")
         print("you combined you flippers to make it the best swimming gear around!")
+        flip = Person.inventory.index(flippers)
+        Person.inventory.pop(flip)
         Seafloor.up = Deep_Ocean
         Deep_Ocean.down = Seafloor
-        Ocean_Bay.description = "you feel like you can swim forever"
-        Ocean_Bay.south = Ocean
-        Deep_Ocean.north = Ocean
-        Ocean.south = Deep_Ocean
-        Deep_Ocean.south = island
-        print("you can swim in water")
 # Characters
 
 
@@ -465,8 +459,7 @@ class Oceanperson(Npc):
         print("here, have this...")
         Person.inventory.append(swimsuit)
 
-    @staticmethod
-    def found():
+    def found(self):
         print("My, My daughter!")
         input("Next >>")
         print("she, she returned")
@@ -487,7 +480,6 @@ class Oceanperson(Npc):
 class Ghost(Character):
     def __init__(self, name, health, weapon, armor, accuracy, money, inithealth):
         super(Ghost, self).__init__(name, health, weapon, armor, accuracy, money, inithealth)
-        self.dead = True
 
     @staticmethod
     def specialattack():
@@ -544,41 +536,36 @@ class Ghost(Character):
             else:
                 print("They missed the attack")
         if self.health <= 0:
-            if self.dead is True:
-                print("~~Objective Complete!~~")
-                print(objective[objective.index("Main Quest: The Bottom of the Well.")])
-                print("your health increased by 50!")
-                Person.init += 50
-                Person.health = Person.init
-                Gatekeeper.text = "I see the rumbling has stopped. thank you."
-                print("~-~" * 20)
-                print("you have come far...")
-                input("Next >>")
-                print("i see you have gotten a key item to your success in saving this world...")
-                input("Next >>")
-                print("although you might have gotten a bit closer to your goal...")
-                input("Next >>")
-                print("it only becomes more difficult from here...")
-                input("Next >>")
-                print("the monster are angered by your actions...")
-                input("Next >>")
-                print("and they will try their best to stop you in your tracks...")
-                input("Next >>")
-                print("do not fear though, you too will become stronger as you go on...")
-                input("Next >>")
-                print("go, to the land in which the water flows strong...")
-                input("Next >>")
-                print("there you will find your next task.")
-                input("Next >>")
-                print("until next time... good luck.")
-                weak_monster.inithealth = 40
-                weak_monster.money = 10
-                woodBat.attack = 10
-                self.dead = False
-            else:
-                print("you remember well how the battle was and how it ended")
-                print("you feel better than ever.")
-                ghost.health = 200
+            print("~~Objective Complete!~~")
+            print(objective[objective.index("Main Quest: The Bottom of the Well.")])
+            print("your health increased by 50!")
+            Person.init += 50
+            Person.health = Person.init
+            Gatekeeper.text = "I see the rumbling has stopped. thank you."
+            print("~-~" * 20)
+            print("you have come far...")
+            input("Next >>")
+            print("i see you have gotten a key item to your success in saving this world...")
+            input("Next >>")
+            print("although you might have gotten a bit closer to your goal...")
+            input("Next >>")
+            print("it only becomes more difficult from here...")
+            input("Next >>")
+            print("the monster are angered by your actions...")
+            input("Next >>")
+            print("and they will try their best to stop you in your tracks...")
+            input("Next >>")
+            print("do not fear though, you too will become stronger as you go on...")
+            input("Next >>")
+            print("go, to the land in which the water flows strong...")
+            input("Next >>")
+            print("there you will find your next task.")
+            input("Next >>")
+            print("until next time... good luck.")
+            weak_monster.inithealth = 40
+            weak_monster.money = 10
+            woodBat.attack = 10
+            return True
 
 
 # Player
@@ -631,28 +618,25 @@ class Player(object):
 
     @staticmethod
     def equip():
-        try:
-            o = 0
-            for i in Person.inventory:
-                print(Person.inventory[o].name)
-                o += 1
-            equipness = input("equip what")
-            f = 0
-            for u in Person.inventory:
-                if equipness.lower() == Person.inventory[f].name:
-                    try:
-                        Person.inventory[f].check2()
-                        print("you equipped the %s" % Person.inventory[f].name)
-                        print("%s: %s" % (Person.inventory[f].name, Person.inventory[f].description))
-                        print("the item that was in your weapon slot had been transferred to your inventory")
-                        Person.inventory.append(Person.weapon)
-                        Person.weapon = Person.inventory[f]
-                        Person.inventory.remove(Person.inventory[f])
-                    except AttributeError:
-                        print("that item is not a weapon.")
-                f += 1
-        except AttributeError:
-            print("-")
+        o = 0
+        for i in Person.inventory:
+            print(Person.inventory[o].name)
+            o += 1
+        equipness = input("equip what")
+        f = 0
+        for u in Person.inventory:
+            if equipness.lower() == Person.inventory[f].name:
+                try:
+                    Person.inventory[f].check2()
+                    print("you equipped the %s" % Person.inventory[f].name)
+                    print("%s: %s" % (Person.inventory[f].name, Person.inventory[f].description))
+                    print("the item that was in your weapon slot had been transferred to your inventory")
+                    Person.inventory.append(Person.weapon)
+                    Person.weapon = Person.inventory[f]
+                    Person.inventory.remove(Person.inventory[f])
+                except AttributeError:
+                    print("that item is not a weapon.")
+            f += 1
 
     @staticmethod
     def drop(thing):
@@ -807,7 +791,7 @@ class Player(object):
         if self.current_location.battle is True:
             if chance in [3]:
                 Person.battle(weak_monster)
-                weak_monster.health = weak_monster.inithealth
+                weak_monster.health = 20
         if self.current_location.battle is False:
             print("This is a safe place")
 
@@ -818,38 +802,28 @@ class Darksword(Weapons):
 
     @staticmethod
     def pickup():
-        if ghost.dead is True:
-            print("the ground shakes.")
-            print("")
-            print("a figure appears in front of you")
-            print("the figure awaits you to do something")
-            print("will you attack it?")
-            ghostfight = input("yes or no?")
-            if ghostfight.lower() in ('yes', 'y'):
-                currentweapon = Person.weapon
-                Person.weapon = ghostsword
-                Person.battle(ghost)
-                Person.weapon = currentweapon
-                if ghost.health <= 0:
-                    print("you won the battle and got the flippers, now you can swim in shallow water")
-                    Person.inventory.append(flippers)
-                    print("the ghost swirled around, holding on to its final hope, it ran away.")
-                    sealing_room.description = "a place to make troublesome people disappear. it feels less scary" \
-                                               " how it was when you first entered."
-                    ghost.health = 200
-                else:
-                    print("you ran away")
+        print("the ground shakes.")
+        print("")
+        print("a figure appears in front of you")
+        print("the figure awaits you to do something")
+        print("will you attack it?")
+        ghostfight = input("yes or no?")
+        if ghostfight.lower() in ('yes', 'y'):
+            currentweapon = Person.weapon
+            Person.weapon = ghostsword
+            Person.battle(ghost)
+            Person.weapon = currentweapon
+            if ghost.health <= 0:
+                print("you won the battle and got the flippers, now you can swim in shallow water")
+                Person.inventory.append(flippers)
+                print("the ghost swirled around, holding on to its final hope, it ran away.")
+                sealing_room.description = "a place to make troublesome people disappear. it feels less scary than" \
+                                           "how it was when you first entered."
             else:
-                print("you retreated before anything happened")
-                Person.current_location = Below_The_Well
+                print("you ran away")
         else:
-            print("would you like to remember the fight?")
-            think = input("yes or no")
-            if think.lower() in ("yes", "y"):
-                currentweapon = Person.weapon
-                Person.weapon = ghostsword
-                Person.battle(ghost)
-                Person.weapon = currentweapon
+            print("you retreated before anything happened")
+            Person.current_location = Below_The_Well
 
 
 sword = Weapons("Sword", "a normal sword to use, used highly by knights in the royal guard.", 20, None)
@@ -918,17 +892,6 @@ Deep_Ocean = Room("Deep Ocean", "Fish swim by you. if you had something to breat
                                 " explore below")
 Seafloor = Room("Seafloor", "This place used to be above water, it must've sank")
 island = Room("island", "this place is a paradise for many")
-villagetreasure = Room("The Village Treasury", "a place holding the treasures of the village.")
-middle1 = Room("Middle Of The Room", "The center of the room of the dungeon.")
-left1 = Room("Left Of The Room", "The Left corner of the room. \n A block can be pushed here.", None, middle1)
-right1 = Room("Right Of The Room", "The Right corner of the room. \n a chest is here.", None, None, None, middle1)
-bossroom = Room("Underwater ruins", "something is swimming around in the water with you.")
-void = Room("void", ".")
-middle1.east = right1
-middle1.west = left1
-middle1.south = Seafloor
-Seafloor.north = middle1
-
 Ominous_Room.north = Forest_Entrance
 Forest_Entrance.north = Main_Road
 Forest_Entrance.west = Forest
@@ -955,15 +918,13 @@ Village.battle = False
 Floating_Shop.battle = False
 Shop.battle = False
 town.battle = False
-Ocean_Bay.battle = False
 oasis.east = town
 Highlands.items = [wheat]
 Rain_Forest.items = [starfruit, watermelon]
 oasis.items = [cactus_fruit]
 
 Rooms = [Ominous_Room, Forest_Entrance, Forest, Main_Road, Town_Square, Shop, Foothills, Highlands, Mountains, Village,
-         Floating_Shop, Rain_Forest, Beach, Beach_Village, Below_The_Well, oasis, town, desert_temple, sealing_room,
-         Village_Treasury]
+         Floating_Shop, Rain_Forest, Beach, Beach_Village, Below_The_Well, oasis, town, desert_temple, sealing_room]
 
 Village.items = [carrots]
 Forest_Entrance.items = [acorn]
@@ -994,13 +955,8 @@ firstfish = True
 check1 = False
 secondfish = False
 thirdfish = False
-block = False
-chest = False
+deadmon = False
 name = True
-Person.inventory.append(swimsuit)
-Person.inventory.append(flippers)
-Person.current_location = Ocean_Bay
-
 while playing:
     print(Person.current_location.name)
     print(Person.current_location.description)
@@ -1023,65 +979,11 @@ while playing:
                 input("Next >>")
                 print("you wonder if this bag belongs to...")
                 input("Next >>")
-                print("you should tell ocean person.")
+                print("you should tell him.")
                 input("Next >>")
                 secondfish = True
                 check1 = False
-    if command.lower() in ("push", "p"):
-        if Person.current_location == left1:
-            if block is False:
-                print("the block was pushed and it landed on a switch.")
-                print("it sounds like a door opened near the center of the room.")
-                left1.description = "The Left corner of the room."
-                middle1.north = bossroom
-                block = True
-    if command.lower() in ("open", "o"):
-        if Person.current_location == right1:
-            if chest is False:
-                print("you opened the chest")
-                print("what was inside wasss....")
-                input("Next >>")
-                print("20 coins!")
-                Person.money += 20
-                right1.description = "The Right corner of the room."
-                chest = True
-    if Person.current_location == bossroom:
-        print("you look around")
-        input("Next >>")
-        print("the thing swimming around you stops to stare.")
-        input("Next >>")
-        print("the door behind you closes")
-        input("Next >>")
-        Person.current_location = void
-        print("hello, it is ocean ma- Person.")
-        input("Next >>")
-        print("i am sorry if you expected to have any story in this game")
-        input("Next >>")
-        print("there is no budget or time to do that.")
-        input("Next >>")
-        print("you made it this far, i congratulate you.")
-        input("Next >>")
-        print("but alas, it is the last time i will ever see you alive.")
-        input("Next >>")
-        exit()
 
-
-    if command.lower() in ("pickup", "p"):
-        if Person.current_location == villagetreasure:
-            if firstmoney is True:
-                print("there is a ton of money on the floor.\n"
-                      "will you take some?")
-                take = input("yes or no?")
-                if take.lower() in ("yes", "y"):
-                    print("It's a secret to everyone.")
-                    Person.money += 500
-                    print("you got 500 of their funds")
-                    firstmoney = False
-                else:
-                    print("you decided to leave the money alone.")
-                    print("you feel a lot better.")
-            else:
-                print("you shouldn't take anything else...")
     if command.lower() in ("heal", "nurse"):
         if Person.current_location == Village:
             print("your wounds were healed!")
@@ -1090,9 +992,10 @@ while playing:
             print("your not in the right location for this")
 
     if Person.current_location is sealing_room:
-        if command.lower() in ('pickup', 'p'):
-            ghostsword.pickup()
-
+        if deadmon is False:
+            if command.lower() in ('pickup', 'p'):
+                if ghostsword.pickup() is True:
+                    deadmon = True
     if command.lower() in ('check', 'self'):
         print("Current Health:")
         print(Person.health)
@@ -1211,6 +1114,18 @@ while playing:
             print(Person.current_location.items[m].name)
             m += 1
         Person.pickup()
+        if Person.current_location is Village_Treasury:
+            if firstmoney is True:
+                print("There is tons of money on the floor")
+                print("you shouldn't take it though")
+                take = input("will you?")
+                if take.lower() is "yes":
+                    print("you took the money.")
+                    print("there was 1,000 dollars here!")
+                    Person.money += 1000
+                    firstmoney = False
+                else:
+                    print("you did not take the money.")
 
     elif command.lower() in directions:
         try:
